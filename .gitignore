@@ -2,8 +2,7 @@
 /Data/TamilData/ImageSet
 /Data/SinhalaData/ImageSet
 
-# Ignore data folder
-data/
+/env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
