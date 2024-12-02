@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Load the combined dataset
-file_path = 'combined_dataset.csv'
+file_path = 'SinhalaSignClassification/SSL - Cleaned CSV'
 data = pd.read_csv(file_path)
 
 # Compute mean, max, and min for each angle
