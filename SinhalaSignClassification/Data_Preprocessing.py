@@ -2,7 +2,7 @@ import os
 import pandas as pd
 
 # Specify the directory containing your CSV files
-csv_directory = 'path_to_your_csv_folder'  # Replace with the folder containing the 18 CSVs
+csv_directory = 'SinhalaSignClassification/SSL - Cleaned CSV'  # Replace with the folder containing the 18 CSVs
 combined_data = []
 
 # Loop through all CSV files in the directory
