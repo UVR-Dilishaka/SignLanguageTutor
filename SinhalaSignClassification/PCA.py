@@ -4,7 +4,7 @@ from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 
 # Load the combined dataset
-file_path = 'combined_dataset.csv'  # Path to the combined CSV file
+file_path = 'SinhalaSignClassification/SSL - Cleaned CSV'  # Path to the combined CSV file
 data = pd.read_csv(file_path)
 
 # Separate features and labels
