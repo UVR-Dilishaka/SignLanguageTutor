@@ -9,7 +9,7 @@ def extract_features(row):
     return features
 
 # Load dataset
-file_path = 'combined_dataset.csv'
+file_path = 'SinhalaSignClassification/SSL - Cleaned CSV'
 data = pd.read_csv(file_path)
 
 # Extract features for each row
