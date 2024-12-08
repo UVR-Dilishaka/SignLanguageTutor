@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hand Detection</title>
+    <style>
+        #camera_feed {
+            width: 60%;
+            display: inline-block;
+            vertical-align: top;
+        }
+        #coordinates {
+            width: 35%;
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hand Detection</h1>
+    <div id="camera_feed">
+        <img src="{{ url_for('hand_detectionPage') }}" alt="Live Camera Feed" />
+    </div>
+    <div id="coordinates">
+        <h3>Coordinates:</h3>
+        <p id="coord-output">Waiting for coordinates...</p>
+    </div>
+
+    <!-- Include Socket.IO -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+    <script>
+        // Connect to the WebSocket server
+        var socket = io.connect('http://localhost:5000');
+
+        socket.on('connect', function() {
+            console.log("WebSocket connected!");
+        });
+
+
+        // Listen for the 'hand_coordinates' event from the backend
+        socket.on('hand_coordinates', function(data) {
+
+            console.log("Received coordinates:", data);  // Debug log to see what data is coming in
+
+            // Check if coordinates are available
+            if (data) {
+                // Update the coordinates display dynamically
+                var coordOutput = document.getElementById('coord-output');
+                coordOutput.innerHTML =
+                    "Wrist: (" + data.wrist[0].toFixed(2) + ", " + data.wrist[1].toFixed(2) + ")<br>" +
+                    "Index MCP: (" + data.index_mcp[0].toFixed(2) + ", " + data.index_mcp[1].toFixed(2) + ")<br>" +
+                    "Middle MCP: (" + data.middle_mcp[0].toFixed(2) + ", " + data.middle_mcp[1].toFixed(2) + ")";
+            }
+        });
+    </script>
+</body>
+</html>
