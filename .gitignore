@@ -1,6 +1,5 @@
 # Ignore the virtual environment folder
-/Data/TamilData/ImageSet
-/Data/SinhalaData/ImageSet
+
 /env
 /Data
 *.csv
