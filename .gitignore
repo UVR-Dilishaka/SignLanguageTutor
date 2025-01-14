@@ -1,8 +1,8 @@
 # Ignore the virtual environment folder
-/Data/TamilData/ImageSet
-/Data/SinhalaData/ImageSet
-/env
 
+/env
+/Data
+*.csv
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

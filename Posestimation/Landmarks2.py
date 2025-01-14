@@ -92,6 +92,6 @@ def getLandmarksFromFolder(folder_path, output_csv_path):
 
 
 # Usage
-folder_path = r"D:\Yr2\DSGP\Virtual Environment\DSGP\TamilDataset\TamilDataset\WIN_20241110_11_24_24_Pro.jpg"
+folder_path = 
 output_csv_path = "hand_landmarks.csv"
 getLandmarksFromFolder(folder_path, output_csv_path)
