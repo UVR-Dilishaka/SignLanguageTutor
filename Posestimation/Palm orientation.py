@@ -5,7 +5,6 @@ import csv
 import numpy as np
 
 def palm_orientation(finger_MCP_coordinates):
-    """Calculate the palm orientation angles."""
     wrist = np.array([0, 0, 0])
     mean_finger_base = np.mean(finger_MCP_coordinates, axis=0)
 
