@@ -1,0 +1,8 @@
+* Hand landmark detection models used
+	1) mediapipe hands -->  pip install mediapipe
+	2) openpose hands --> https://drive.google.com/drive/folders/1JsvI4M4ZTg98fmnCZLFM-3TeovnCRElG
+
+* Benchmarking dataset 
+	- Download FreiHAND Dataset v2 - Evaluation set with annotations
+		(https://lmb.informatik.uni-freiburg.de/data/freihand/FreiHAND_pub_v2_eval.zip)
+	
