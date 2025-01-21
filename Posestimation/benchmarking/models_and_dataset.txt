@@ -4,5 +4,5 @@
 
 * Benchmarking dataset 
 	- Download FreiHAND Dataset v2 - Evaluation set with annotations
-		(https://lmb.informatik.uni-freiburg.de/data/freihand/FreiHAND_pub_v2_eval.zip)
+		(https://lmb.informatik.uni-freiburg.de/data/freihand/FreiHAND_pub_v2_eval.zip) 
 	
