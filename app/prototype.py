@@ -44,20 +44,33 @@ if run:
 
             # If hand landmarks are detected
             if result.multi_hand_landmarks and result.multi_handedness:
-                for idx, hand_landmarks in enumerate(result.multi_hand_landmarks):
-                    # Get the hand label (Left/Right)
-                    hand_label = result.multi_handedness[idx].classification[0].label
+                for hand_idx, (hand_landmarks, handedness) in enumerate(
+                        zip(result.multi_hand_landmarks, result.multi_handedness)):
 
+                    # Identify the hand as "Left" or "Right"
+                    hand_label = handedness.classification[0].label
+
+                    # Draw landmarks on the frame
                     mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+
+                    # Get wrist coordinates for normalization
+                    wrist = hand_landmarks.landmark[0]
+                    wrist_x, wrist_y, wrist_z = wrist.x, wrist.y, wrist.z
 
                     # Extract landmark coordinates and associate them with the corresponding name
                     for i, landmark in enumerate(hand_landmarks.landmark):
+                        # Normalize the coordinates by subtracting the wrist position
+                        norm_x = landmark.x - wrist_x
+                        norm_y = landmark.y - wrist_y
+                        norm_z = landmark.z - wrist_z
+
+                        # Append both normalized and original coordinates to the data
                         landmarks_data.append({
                             'Hand': hand_label,  # Left or Right hand
                             'Landmark': landmark_names[i],
-                            'X': landmark.x,
-                            'Y': landmark.y,
-                            'Z': landmark.z
+                            'Normalized_X': norm_x,
+                            'Normalized_Y': norm_y,
+                            'Normalized_Z': norm_z
                         })
 
             # Update the frame in Streamlit
