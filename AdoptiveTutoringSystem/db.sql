@@ -27,8 +27,7 @@ CREATE TABLE activity (
     sign_id INT NOT NULL,
     result DECIMAL(5, 2) NOT NULL,  -- Result as success rate (e.g., 0.85 for 85%)
     timetaken DECIMAL(6, 2),  -- Time taken to perform the sign, in seconds
-    hint_used BOOLEAN,  -- Whether a hint was used (true/false)
-    hint_type VARCHAR(50),  -- Type of hint used (if applicable)
+    hint_used BOOLEAN,  -- Whether a hint was used (true/false) -- Type of hint used (if applicable)
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (student_id) REFERENCES student(student_id),
     FOREIGN KEY (sign_id) REFERENCES signs(sign_id)
