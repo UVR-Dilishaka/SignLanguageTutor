@@ -7,3 +7,5 @@ tensorflow
 pybkt
 scikit-learn
 streamlit
+notebook
+
