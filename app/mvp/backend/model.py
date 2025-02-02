@@ -1,12 +1,13 @@
 from ext import db
 
 
-# User model (general for students and teachers)
+# User model 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(),nullable=False)
     password = db.Column(db.Text(),nullable=False)
+    isteacher = db.Column(db.Boolean, nullable=False)
 
     def __repr__(self):
         return f"User {self.username}"
@@ -24,17 +25,6 @@ class User(db.Model):
         self.password_hash = password_hash
         db.session.commit()
 
-# Student model
-class Student(User):
-    __tablename__ = 'student'
-    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    # Additional fields for students can be added if necessary
-
-# Teacher model
-class Teacher(User):
-    __tablename__ = 'teacher'
-    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    # Additional fields for teachers can be added if necessary
 
 # Sign model
 class Sign(db.Model):
@@ -59,6 +49,7 @@ class Sign(db.Model):
         self.mono_code_characters = mono_code_characters
         self.predictive_label = predictive_label
         db.session.commit()
+
 
 # Activity model
 class Activity(db.Model):
