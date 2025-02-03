@@ -9,7 +9,7 @@ app=Flask(__name__)
 app.config.from_object(Devconfig)
 
 db.init_app(app)
-migrate = Migrate(app,db)
+
 
 api = Api(app,doc='/docs')
 
@@ -82,7 +82,7 @@ class HelloResource(Resource):
 @api.route('/users')
 class UserResource(Resource):
 
-    @api.marshal_with(user_model)
+    @api.marshal_list_with(user_model)  
     def get(self):
         """Get all users"""
         users = User.query.all()
@@ -344,3 +344,8 @@ if __name__ == '__main__':
 
 
 
+
+
+@app.shell_context_processor
+def make_shell_context():
+    return {'db': db, 'User': User, 'Sign': Sign, 'Activity': Activity, 'PerformanceHistory': PerformanceHistory, 'StudentSignMastery': StudentSignMastery}

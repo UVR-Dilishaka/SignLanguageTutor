@@ -54,7 +54,7 @@ class Sign(db.Model):
 # Activity model
 class Activity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     sign_id = db.Column(db.Integer, db.ForeignKey('sign.id'), nullable=False)
     result = db.Column(db.Numeric(5, 2), nullable=False)  # Success rate
     timetaken = db.Column(db.Numeric(6, 2))  # Time taken to perform the sign
@@ -81,7 +81,7 @@ class Activity(db.Model):
 # Performance History model
 class PerformanceHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     sign_id = db.Column(db.Integer, db.ForeignKey('sign.id'), nullable=False)
     mastery_level = db.Column(db.Numeric(5, 2))  # Mastery level
     timestamp = db.Column(db.DateTime, server_default=db.func.now())
@@ -103,7 +103,7 @@ class PerformanceHistory(db.Model):
 
 # Student-Sign Mastery model
 class StudentSignMastery(db.Model):
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     sign_id = db.Column(db.Integer, db.ForeignKey('sign.id'), primary_key=True)
     current_mastery_level = db.Column(db.Numeric(5, 2))  # Current mastery level
     last_updated = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
@@ -122,3 +122,4 @@ class StudentSignMastery(db.Model):
     def update(self, current_mastery_level):
         self.current_mastery_level = current_mastery_level
         db.session.commit()
+
