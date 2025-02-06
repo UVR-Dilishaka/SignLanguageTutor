@@ -9,6 +9,7 @@ app=Flask(__name__)
 app.config.from_object(Devconfig)
 
 db.init_app(app)
+migrate = Migrate(app, db)
 
 
 api = Api(app,doc='/docs')
