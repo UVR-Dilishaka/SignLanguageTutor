@@ -5,7 +5,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 class Config:
-    SEAcret_KEY = config("KEY")
+    SECRET_KEY = config("KEY")
     SQLALCHEMY_TRACK_MODIFICATIONS = config('SQLALCHEMY_TRACK_MODIFICATIONS',cast = bool)
 
 class Devconfig(Config):

@@ -1,16 +1,20 @@
-from flask import Flask,request
+from flask import Flask,request,jsonify
 from flask_restx import Api,Resource,fields
 from config import Devconfig
 from model import User,Sign,Activity,PerformanceHistory,StudentSignMastery
 from ext import db
 from flask_migrate import Migrate
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import JWTManager,create_access_token,create_refresh_token,jwt_required
+
+
 
 app=Flask(__name__)
 app.config.from_object(Devconfig)
 
 db.init_app(app)
 migrate = Migrate(app, db)
-
+JWTManager(app)
 
 api = Api(app,doc='/docs')
 
@@ -70,11 +74,15 @@ student_sign_mastery_model = api.model(
 )
 
 
+
 @api.route('/hello')
 class HelloResource(Resource):
-    def get (self):
-        return {"txt":"Hi am online"}
     
+    @jwt_required()
+    def get (self):
+        return {"txt":"Hi am online and i am a projected route"}
+    
+
 
 
 #setting up routes for db crud operations
@@ -90,6 +98,7 @@ class UserResource(Resource):
         return users
 
     @api.marshal_with(user_model)
+    @api.expect(user_model)
     def post(self):
         """Create a new user"""
         data = request.get_json()
@@ -350,3 +359,6 @@ if __name__ == '__main__':
 @app.shell_context_processor
 def make_shell_context():
     return {'db': db, 'User': User, 'Sign': Sign, 'Activity': Activity, 'PerformanceHistory': PerformanceHistory, 'StudentSignMastery': StudentSignMastery}
+
+
+
