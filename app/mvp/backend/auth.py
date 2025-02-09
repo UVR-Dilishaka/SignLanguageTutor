@@ -2,7 +2,7 @@ from flask_restx import Namespace, Resource,fields
 from flask import request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from model import User
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, jwt_required
 
 
 auth_ns = Namespace('auth', description='Authentication operations')
@@ -75,3 +75,11 @@ class Login(Resource):
             return jsonify({"acess_token":acess_token,"refresh_token":refresh_token})
 
 
+@auth_ns.route('/refresh')
+class Refresh(Resource):
+    @jwt_required(refresh=True)
+    def post(self):
+        current_user = get_jwt_identity()
+        acess_token = create_access_token(identity='username')
+        return jsonify({"acess_token":acess_token})
+    
