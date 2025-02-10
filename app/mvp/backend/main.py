@@ -4,6 +4,7 @@ from model import User,Sign,Activity,PerformanceHistory,StudentSignMastery
 from ext import db
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 from auth import auth_ns
 from data import data_ns
 
@@ -16,6 +17,7 @@ def create_app(config):
     migrate = Migrate(app, db)
     JWTManager(app)
     api = Api(app,doc='/docs')
+    CORS(app)
 
     api.add_namespace(auth_ns)
     api.add_namespace(data_ns)  

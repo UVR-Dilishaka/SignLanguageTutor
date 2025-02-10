@@ -63,15 +63,21 @@ student_sign_mastery_model = data_ns.model(
 
 
 
-@data_ns.route('/hello')
+@data_ns.route('/ping-protected')
 class HelloResource(Resource):
     
     @jwt_required()
     def get (self):
-        return {"txt":"Hi am online and i am a projected route"}
+        return {"txt":"protected route acessed"}
     
 
 
+@data_ns.route('/ping-public')
+class HelloResource(Resource):
+    
+    def get (self):
+        return {"txt":"public route acessed"}
+    
 
 #setting up routes for db crud operations
 
