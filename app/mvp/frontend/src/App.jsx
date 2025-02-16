@@ -1,31 +1,26 @@
-import { useState } from "react"
-import { useEffect } from "react"
 
+import React from "react";
+import Header from "./components/Header";
+import HomeImg from "./components/HomeImg";
+import SignupButton from "./components/SignupButton";
+import Features from "./components/Features";
+
+import "./App.css";
+import Letters from "./components/Letters";
+import Footer from "./components/Footer";
 
 function App() {
-    const [message, setMessage] = useState("Loading...");
+  return (
+    <div className="container">
+      <Header />
+      <HomeImg />
+      <SignupButton text="🚀 Sign In" link="/signup" />
+      <Features />
+      <Letters />
+      <Footer />
 
-    useEffect(() => {
-        fetch("/data/ping-public")
-            .then(response => response.json())
-            .then(data => {
-                if (data.txt) {
-                    setMessage(data.txt);
-                } else {
-                    setMessage("No message found");
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching data:", error);
-                setMessage("Failed to load data");
-            });
-    }, []);
-
-    return (
-        <div className="test">
-            {message}
-        </div>
-    );
+    </div>
+  );
 }
 
-export default App
+export default App;

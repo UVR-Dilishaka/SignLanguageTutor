@@ -20,7 +20,9 @@ def create_app(config):
     CORS(app)
 
     api.add_namespace(auth_ns)
-    api.add_namespace(data_ns)  
+    api.add_namespace(data_ns) 
+
+     
 
     @app.shell_context_processor
     def make_shell_context():
