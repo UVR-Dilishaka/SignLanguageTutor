@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediaPipe Hand Tracking</title>
+    
+    <!-- Load MediaPipe Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script> 
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; 
+        }
+
+        .main-container {
+            display: flex; 
+            gap: 20px; 
+        }
+
+        .container {
+            width: 640px;
+            height: 480px;
+            position: relative;
+        }
+
+        video, canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        video {
+            transform: scaleX(-1);
+        }
+
+        #rawLandmarks, #normLandmarks, #angles {
+            background-color: hsl(208, 73%, 84%);
+            height: 80vh;
+            width: 30vw;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Video feed and canvas -->
+        <div class="container">
+            <video id="videoElement" width="640" height="480" autoplay></video>
+            <canvas id="canvasElement" width="640" height="480"></canvas>
+        </div>     
+    </div>
+    <br>
+    <div id="rawLandmarks">
+    </div>
+    <div id="normLandmarks">
+    </div>
+    <div id="angles">
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
