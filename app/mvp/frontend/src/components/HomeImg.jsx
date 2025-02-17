@@ -1,7 +1,7 @@
 import React from "react";
-import signImage from "../assets/homeimg.jpg"; // Place image in public/assets
+import signImage from "../assets/homeimg.jpg"; 
 
-const homeImg = () => {
+const HomeImg = () => {
   return (
     <div className="image-container">
       <img src={signImage} alt="Sign Language Display" />
@@ -9,4 +9,4 @@ const homeImg = () => {
   );
 };
 
-export default homeImg;
+export default HomeImg;

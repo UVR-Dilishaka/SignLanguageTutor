@@ -7,6 +7,7 @@
   --secondary-hover: #e64a19;
   --background-color: #fff7e6;
   --container-bg: #ffe4e1;
+  --sub-container-bg:#D1C4E9;
   --text-color: #444;
   --subtext-color: #616161;
   --shadow-color: rgba(0, 0, 0, 0.2);
@@ -129,4 +130,94 @@ h1 {
 /* Stick to the bottom */
   bottom: 0;
   left: 0;
+}
+
+
+/* forms */
+
+/* Container for both signup and login forms */
+.form-container {
+  background: var(--sub-container-bg);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 6px 12px var(--shadow-color);
+  max-width: 400px;
+  margin: auto;
+  text-align: center;
+}
+
+.form-container h2 {
+  color: var(--primary-color);
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+/* Generic form styling for both signup and login */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-form .form-label {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--text-color);
+  text-align: left;
+  display: block;
+}
+
+.auth-form .form-control {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid var(--sub-container-bg);
+  border-radius: 8px;
+  font-size: 16px;
+  color: var(--text-color);
+  background: white;
+  outline: none;
+  transition: border 0.3s ease-in-out;
+}
+
+.auth-form .form-control:focus {
+  border-color: var(--secondary-color);
+}
+
+.auth-form .checkbox-label {
+  font-size: 14px;
+  color: var(--subtext-color);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-form input[type="checkbox"] {
+  accent-color: var(--primary-color);
+  width: 18px;
+  height: 18px;
+}
+
+/* Common button styling */
+.auth-form .btn-primary {
+  background: var(--secondary-color);
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+  border: none;
+}
+
+.auth-form .btn-primary:hover {
+  background: var(--secondary-hover);
+}
+
+/* Error message styling */
+.error-text {
+  color: red;
+  font-size: 14px;
+  margin-top: -10px;
+  text-align: left;
 }

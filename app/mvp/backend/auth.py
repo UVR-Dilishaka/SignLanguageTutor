@@ -38,7 +38,7 @@ class Signup(Resource):
         db_user = User.query.filter_by(username=username).first()
 
         if db_user is not None:
-            return jsonify({"message":f"User with username {username} already exists"})
+            return 400
 
         new_user = User(
             username=data.get('username'),
@@ -48,7 +48,7 @@ class Signup(Resource):
         )
 
         new_user.save()
-        return jsonify({"message": f"User with username {username} successfully created"})
+        return 201
 
 
 
