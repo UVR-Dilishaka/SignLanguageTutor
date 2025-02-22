@@ -1,0 +1,111 @@
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+.header-section{
+  border: 2px solid black;
+  margin: 0;
+  text-align: center;
+}
+
+.main-level-container{
+  display: flex;
+  margin-top: 10px;
+}
+
+.level-no-container {
+  height: 80px;
+  margin-top: 10px;
+  margin-left: 10px;
+  border: 2px solid black;
+  width: 25vw;
+}
+
+.level-no-container p{
+  font-size: 1.6em;
+  padding-left: 20%;
+}
+
+.letter-box-container{
+  height: 80px;
+  margin-top: 10px;
+  margin-left: 10px;
+  border: 2px solid black;
+  display: flex;
+  justify-content: space-between;
+  width: 50vw;
+}
+
+.letter-box-container div{
+  display: inline-flex;
+  width: 60px;
+  height: 60px;
+  border: 1px solid black;
+  margin: 5px;
+  border-radius: 50%;
+}
+
+#letter-box1{
+  margin-left: 10%;
+}
+
+.score-display{
+  border: 2px solid black;
+  margin-left: 10px;
+  margin-top: 10px;
+  width: 20vw;
+}
+
+.sign-related-container{
+  margin-top: 30px;
+  display: flex;
+}
+
+.canvas{
+  margin-left: 10px;
+  border: 2px solid black;
+  height: 432px;
+  width: 768px;
+}
+
+.notification-box {
+  width: 600px;
+  border: 1px solid hsla(0, 100%, 50%, 0.73);
+  position: relative;
+  top: 50px;
+  left: 20px;
+  z-index: 9999;
+}
+
+.hint-img{
+  height: 300px;
+  width: 300px;
+  border: 2px solid black;
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+.switch-button-container{
+  height: 250px;
+  margin-left: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.next-letter-switch, .previous-letter-switch{
+  border: 2px solid green;
+  width: 250px;
+  margin-left: 0;
+  height: 50px;
+}
+
+.full-screen{
+  position: absolute;
+  right: 80px;
+  border: 2px solid orange;
+  height: 30px;
+  width: 100px;
+}
+
