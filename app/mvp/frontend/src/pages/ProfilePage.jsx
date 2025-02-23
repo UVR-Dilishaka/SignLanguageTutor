@@ -84,16 +84,13 @@ function ProfilePage() {
           <select
             value={selectedLanguage}
             onChange={(e) => setSelectedLanguage(e.target.value)}
-            className="px-4 py-2 border rounded-lg bg-white"
-          >
+            className="custom-select"
+>
             <option value="Tamil">Tamil</option>
             <option value="Sinhala">Sinhala</option>
           </select>
 
-          <button 
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-            onClick={goToPlayPage}
-          >
+          <button className="custom-button" onClick={goToPlayPage}>
             Play
           </button>
         </div>
