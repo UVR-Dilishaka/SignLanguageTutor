@@ -341,3 +341,12 @@ class SingleStudentSignMasteryResource(Resource):
         mastery_to_delete = StudentSignMastery.query.filter_by(student_id=student_id, sign_id=sign_id).first_or_404()
         mastery_to_delete.delete()
         return mastery_to_delete
+
+
+@data_ns.route('/masteries/<int:student_id>')
+class StudentMasteryListResource(Resource):
+    @data_ns.marshal_with(student_sign_mastery_model)
+    def get(self, student_id):
+        """Get mastery levels for a specific student"""
+        masteries = StudentSignMastery.query.filter_by(student_id=student_id).all()
+        return masteries

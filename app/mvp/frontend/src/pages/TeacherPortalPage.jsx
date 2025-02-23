@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../App.css"; // Add styling if needed
+import "./TeacherPortal.css";
 
 const TeacherPortal = () => {
     const [students, setStudents] = useState([]);
