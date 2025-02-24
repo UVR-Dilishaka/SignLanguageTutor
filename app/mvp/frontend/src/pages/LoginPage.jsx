@@ -1,68 +1,89 @@
-import React, { useState, useEffect } from "react";
-import "../App.css"; // Add styling if needed
+import React, { useState } from "react";
+import FormInput from "../components/FormInput";
+import { Link, useNavigate } from "react-router-dom";
+import "../App.css";
 
-const TeacherPortal = () => {
-    const [students, setStudents] = useState([]);
-    const [selectedStudent, setSelectedStudent] = useState(null);
-    const [masteryData, setMasteryData] = useState([]);
+const LoginPage = () => {
+  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchStudents = async () => {
-            try {
-                const response = await fetch("http://localhost:5000/data/users");
-                if (!response.ok) throw new Error("Failed to fetch students");
-                const data = await response.json();
-                setStudents(data);
-            } catch (error) {
-                console.error("Error fetching students:", error);
-            }
-        };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-        fetchStudents();
-    }, []);
+  const validateForm = () => {
+    let newErrors = {};
+    if (!formData.username.trim()) newErrors.username = "Username is required";
+    if (formData.password.length < 6) newErrors.password = "Password must be at least 6 characters long";
 
-    const handleStudentClick = async (studentId) => {
-        setSelectedStudent(studentId);
-        try {
-            const response = await fetch(`http://localhost:5000/data/masteries/${studentId}`);
-            if (!response.ok) throw new Error("Failed to fetch mastery levels");
-            const data = await response.json();
-            setMasteryData(data);
-        } catch (error) {
-            console.error("Error fetching mastery levels:", error);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          if (data.access_token) {
+            localStorage.setItem("access_token", data.access_token);
+            localStorage.setItem("refresh_token", data.refresh_token);
+            alert("Login successful");
+            navigate("/profile");
+          } else {
+            setErrors((prevErrors) => ({ ...prevErrors, username: "Invalid username or password" }));
+          }
+        } else {
+          alert("Login failed");
         }
-    };
+      } catch (error) {
+        console.error("Error during login:", error);
+        alert("Login failed. Couldn't connect to server");
+      }
+    }
+  };
 
-    return (
-        <div className="teacher-portal">
-            <div className="sidebar">
-                <h3>Students</h3>
-                {students.map(student => (
-                    <button 
-                        key={student.id} 
-                        className={selectedStudent === student.id ? "active" : ""}
-                        onClick={() => handleStudentClick(student.id)}
-                    >
-                        {student.username}
-                    </button>
-                ))}
-            </div>
-            <div className="content">
-                <h3>Mastery Levels</h3>
-                {selectedStudent ? (
-                    masteryData.length > 0 ? (
-                        <ul>
-                            {masteryData.map(sign => (
-                                <li key={sign.sign_id}>
-                                    Sign ID {sign.sign_id}: {sign.current_mastery_level}
-                                </li>
-                            ))}
-                        </ul>
-                    ) : <p>No data available</p>
-                ) : <p>Select a student to view mastery levels</p>}
-            </div>
-        </div>
-    );
+  return (
+    <div className="container">
+      <div className="form-container text-center">
+        <h2>Login</h2>
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <FormInput
+            label="Username"
+            type="text"
+            name="username"
+            placeholder="Enter your username"
+            value={formData.username}
+            onChange={handleChange}
+            error={errors.username}
+          />
+
+          <FormInput
+            label="Password"
+            type="password"
+            name="password"
+            placeholder="Enter your password"
+            value={formData.password}
+            onChange={handleChange}
+            error={errors.password}
+          />
+
+          <button type="submit" className="btn btn-primary">Login</button>
+        </form>
+        <p>Don't have an account? <Link to="/signup">Sign up</Link></p>
+      </div>
+    </div>
+  );
 };
 
-export default TeacherPortal;
+export default LoginPage;

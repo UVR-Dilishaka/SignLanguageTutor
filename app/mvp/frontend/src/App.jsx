@@ -6,6 +6,7 @@ import Signup from "./pages/SignupPage";
 import Home from "./pages/HomePage";
 import Login from "./pages/LoginPage";
 import Test from "./pages/TestPage";
+import Profile from "./pages/ProfilePage";
 import TeacherPortal from './pages/TeacherPortalPage';
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
@@ -24,6 +25,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/testping" element={<Test />} />
           <Route path="/teacherportal" element={<TeacherPortal />} />
+          <Route path="/profile" element={<Profile />} />
       </Routes>
       <Footer />
 
