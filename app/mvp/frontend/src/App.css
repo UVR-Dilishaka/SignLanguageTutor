@@ -6,8 +6,8 @@
   --secondary-color: #ff8a65;
   --secondary-hover: #e64a19;
   --background-color: #fff7e6;
-  --container-bg: #ffe4e1;
-  --sub-container-bg:#D1C4E9;
+  --container-bg: #faff93;
+  --sub-container-bg:#d6c1ff;
   --text-color: #444;
   --subtext-color: #616161;
   --shadow-color: rgba(0, 0, 0, 0.2);
@@ -27,7 +27,7 @@ body {
   max-width: 100%;
   padding: 0;
   margin: auto;
-  background: var(--container-bg);
+  background: var( --background-color);
   border-radius: 15px;
 
 }
@@ -126,7 +126,7 @@ h1 {
 .footer {
   width: 100%;
   height: 50px; /* Adjust height as needed */
-  background-color: var(--container-bg); /* Light pink background */
+  background-color: var(--background-color); /* Light pink background */
 /* Stick to the bottom */
   bottom: 0;
   left: 0;
@@ -222,67 +222,58 @@ h1 {
   text-align: left;
 }
 
-
-.teacher-portal {
-  display: flex;
-  height: 100vh; /* Full viewport height */
+.details-container {
+  background: var(--container-bg); /* Light pink */
+  padding: 40px;
+  border-radius: 50px;
+  margin: auto;
+  width: fit-content;
 }
 
-.sidebar {
-  width: 250px;
-  background: var(--container-bg);
-  padding: 20px;
-  border-right: 2px solid var(--shadow-color);
-  overflow-y: auto; /* Enables vertical scrolling */
-  max-height: 90vh; /* Prevents overflow */
+.performance-container {
+  background: var(--sub-container-bg); /* Light purple */
+  padding: 40px;
+  border-radius: 100px;
+  margin: 40px;
 }
 
-.sidebar h3 {
-  margin-bottom: 10px;
-}
-
-.sidebar button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 5px;
-  background: var(--secondary-color);
+.custom-button {
+  background-color: #1d4ed8; /* Custom blue */
   color: white;
-  border: none;
-  border-radius: 5px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  margin: 10px  ;
+}
+
+.custom-button:hover {
+  background-color: #1e40af; /* Darker blue */
+}
+
+.custom-select {
+  background-color: white;
+  border: 2px solid #4F46E5; /* Indigo border */
+  border-radius: 8px; /* Rounded corners */
+  padding: 10px 16px;
+  font-size: 16px;
   cursor: pointer;
-  transition: background 0.3s;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.sidebar button:hover {
-  background: var(--secondary-hover);
+/* Hover & Focus Effects */
+.custom-select:hover {
+  border-color: #4338CA; /* Darker indigo on hover */
 }
 
-.sidebar .active {
-  background: var(--primary-color);
+.custom-select:focus {
+  border-color: #4338CA;
+  box-shadow: 0 0 8px rgba(79, 70, 229, 0.5); /* Glow effect */
 }
 
-.content {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto; /* Ensures content can also scroll */
-}
 
-/* Hide scrollbar for WebKit browsers (Chrome, Edge, Safari) */
-.sidebar::-webkit-scrollbar {
-  display: none;
-}
 
-/* Hide scrollbar for WebKit browsers (Chrome, Edge, Safari) */
-.sidebar::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
 
-/* Hide scrollbar in Firefox */
-.sidebar {
-  scrollbar-width: none; /* No scrollbar in Firefox */
-}
 
 /* Optional: To ensure no padding adjustment after hiding scrollbar */
 .sidebar::-webkit-scrollbar-button {
@@ -315,3 +306,19 @@ h1 {
 .switch-buttons .active {
   background: var(--primary-color);
 }
+
+.letter:nth-child(1) { background: #F44336; } /* Red */
+.letter:nth-child(2) { background: #E91E63; } /* Pink */
+.letter:nth-child(3) { background: #9C27B0; } /* Purple */
+.letter:nth-child(4) { background: #3F51B5; } /* Indigo */
+.letter:nth-child(5) { background: #2196F3; } /* Blue */
+.letter:nth-child(6) { background: #03A9F4; } /* Light Blue */
+.letter:nth-child(7) { background: #00BCD4; } /* Cyan */
+.letter:nth-child(8) { background: #009688; } /* Teal */
+.letter:nth-child(9) { background: #4CAF50; } /* Green */
+.letter:nth-child(10) { background: #8BC34A; } /* Light Green */
+.letter:nth-child(11) { background: #CDDC39; } /* Lime */
+.letter:nth-child(12) { background: #FFEB3B; } /* Yellow */
+.letter:nth-child(13) { background: #FFC107; } /* Amber */
+.letter:nth-child(14) { background: #FF9800; } /* Orange */
+.letter:nth-child(15) { background: #FF5722; } /* Deep Orange */
