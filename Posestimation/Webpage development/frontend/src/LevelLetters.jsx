@@ -1,15 +1,21 @@
+import React from "react";
 
-function LevelLetters(){
+function LevelLetters({ currentLetters, completedLetters, selectedLetter, handleLetterClick }) {
     return (
-        <>
-            <div className="letter-box-container">
-                <div id="letter-box1"><h2>L1</h2></div>
-                <div id="letter-box2"><h2>L2</h2></div>
-                <div id="letter-box3"><h2>L3</h2></div>
-                <div id="letter-box4"><h2>L4</h2></div>
-                <div id="letter-box5"><h2>L5</h2></div>
-            </div>
-        </>
+        <div className="letter-box-container">
+            {currentLetters.map((letter, index) => (
+                <div 
+                    key={index} 
+                    className={`letter-box 
+                        ${completedLetters.includes(letter) ? "completed" : ""} 
+                        ${letter === selectedLetter ? "selected" : ""}`
+                    }
+                    onClick={() => handleLetterClick(letter)}
+                >
+                    <p>{letter}</p>
+                </div>
+            ))}
+        </div>
     );
 }
 

@@ -1,9 +1,9 @@
-function StartNote(){
+function StartNote({letter, handleGameStartClick}){
     return(
         <>
             <div className="start-note">
-                <p>Selected Letter : L1</p>
-                <div>Start</div>
+                <p>Selected Letter : {letter}</p>
+                <div className="start-button1" onClick={handleGameStartClick}>Start</div>
             </div>
         </>
     )

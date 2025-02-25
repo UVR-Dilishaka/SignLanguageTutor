@@ -1,8 +1,8 @@
 
-function LevelNo(){
+function LevelNo({level}){
     return (<>
         <div className="level-no-container">
-            <p>Level : </p>
+            <p>Level : {level}</p>
         </div>
     </>);
 }
