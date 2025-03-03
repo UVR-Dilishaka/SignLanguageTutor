@@ -1,19 +1,22 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap");
+
 :root {
   --primary-color: #ff4081;
   --secondary-color: #ff8a65;
   --secondary-hover: #e64a19;
   --background-color: #fff7e6;
-  --container-bg: #ffe4e1;
-  --sub-container-bg:#D1C4E9;
+  --container-bg: #faff93;
+  --sub-container-bg:#d6c1ff;
   --text-color: #444;
   --subtext-color: #616161;
   --shadow-color: rgba(0, 0, 0, 0.2);
 }
 
 body, html {
+  font-family: "Fredoka One", cursive;
   margin: 0;
   padding: 0;
-  background-color: var(--container-bg);
+  background-color: var(--background-color);
   color: var(--text-color);
 }
 
@@ -190,15 +193,13 @@ body, html {
 .level-no-container p{
   font-size: 1.6em;
   text-align: left;
-  padding-left: 20px;
+  text-align: center;
 }
 
 .letter-box-container{
   height: 80px;
   margin-top: 10px;
   margin-left: 10px;
-  border: 2px solid var(--subtext-color);
-  border-radius: 8px;
   display: flex;
   justify-content: space-around;
   width: 50vw;
@@ -209,13 +210,14 @@ body, html {
   justify-content: center;  
   align-items: center;     
   text-align: center;
-  width: 60px;
-  height: 60px;
-  background-color: rgb(255, 103, 136);
-  border: 1px solid black;
+  width: 70px;
+  height: 70px;
+  background-color: #FFCDD2;;
+  color: #D32F2F;
   border-radius: 50%;
   margin-top: 10px;
   transition: transform 0.3s ease;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .letter-box-container div:hover{
@@ -231,7 +233,8 @@ body, html {
 
 /* Completed letters */
 .letter-box.completed {
-  background-color: rgb(100, 200, 143);
+  background-color: #C8E6C9;
+  color: #388E3C;
 }
 
 .letter-box.completed:hover {
@@ -240,8 +243,9 @@ body, html {
 
 /* Selected letter */
 .letter-box.selected {
-  box-shadow: 0px 0px 14px rgb(56, 119, 255);
-  border: 4px solid rgb(56, 119, 255);
+  pointer-events: none; 
+  box-shadow: 0px 0px 14px #0288D1;
+  border: 4px solid #0288D1;
   margin-top: 8px;
 }
 
@@ -272,8 +276,7 @@ body, html {
 
 .score-display p{
   font-size: 1.6em;
-  text-align: left;
-  padding-left: 20px;
+  text-align: center;
 }
 
 .sign-related-container{
@@ -286,8 +289,8 @@ body, html {
 }
 
 .canvas-wrapper{
-  border: 2px solid black;
-  background-color: hsla(324, 100%, 70%, 0.149);
+  background-color: var(--container-bg);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   border-radius: 5px;
   width: 768px;
   height: 432px;
@@ -369,9 +372,9 @@ body, html {
 .start-note{
   /* display: none; */
   position: absolute;
-  border: 3px solid rgb(255, 66, 14) ;
-  background-color: #ffc9b8;
-  border-radius: 8px;
+  background-color: var(--sub-container-bg);
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   width: 400px;
   height:200px;
   top: 20%;
@@ -388,7 +391,7 @@ body, html {
 .start-note p{
   font-size: 2em;
   text-align: center;
-  color: rgb(255, 66, 14);
+  color: var(--subtext-color);
 }
 
 .start-button1{
@@ -396,10 +399,10 @@ body, html {
   top: 70%;
   left: 50%;
   transform: translate(-50%, -50%);
-  border-radius: 8px;
+  border-radius: 30px;
   width: 150px;
-  height: 50px;
-  background-color: hsla(149, 100%, 29%, 0.863);
+  height: 60px;
+  background-color: rgba(53, 163, 88, 0.673);
   text-align: center;
   font-size: 1.9em;
   align-content: center;
@@ -431,11 +434,19 @@ body, html {
   border-radius: 12px;
   width: 300px;
   height: 100px;
-  background-color: #ff4081;
+  background-color: var(--secondary-color);
   font-size: 3em;
   text-align: center;
   align-content: center;
   color: white;
+  transition: transform 0.3s ease;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.hint-button:hover{
+  background-color: #d93b70;
+  cursor: pointer;
+  transform: translate(-50%, -50%) scale(1.1);
 }
 
 .hint-box{
@@ -490,6 +501,7 @@ body, html {
   .switch-button-container {
     margin: 10px; 
     align-items: center;
+    align-content: center;
     display: flex;
     flex-direction: column;
   }
@@ -502,7 +514,7 @@ body, html {
 
 .next-letter-switch, .previous-letter-switch{
   border-radius: 8px;
-  background-color: rgba(10, 167, 10, 0.677);
+  background-color: rgba(53, 163, 88, 0.673);
   color: white;
   width: 200px;
   margin-left: 0;
@@ -510,7 +522,17 @@ body, html {
   font-size: 1.5em;
   text-align: center;
   align-content: center;
+  transition: transform 0.3s ease;
+  transform-origin: center;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
+
+.next-letter-switch:hover, .previous-letter-switch:hover{
+  background-color: rgba(30, 142, 65, 0.688);
+  cursor: pointer;
+  transform: scale(1.1);
+}
+
 
 .home-button{
   position: absolute;
@@ -518,15 +540,23 @@ body, html {
   margin-top: 5px;  
   margin-bottom: 10px;
   border-radius: 6px;
-  border: 3px solid orangered;
-  background-color: #ffb79f;
-  color: black;
+  background-color: var(--secondary-color);
+  color: white;
   font-size: 1.2em;
   height: 40px;
   width: 150px;
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: transform 0.2s ease;
+  transform-origin: center;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.home-button:hover{
+  background-color: #f6a084;
+  cursor: pointer;
+  transform: scale(1.1);
 }
 
 .home-button p{

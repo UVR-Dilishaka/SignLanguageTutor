@@ -17,22 +17,44 @@ import StartNote from './StartNote.jsx';
 import Timer from './Timer.jsx';
 
 import { useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { io } from "socket.io-client"; 
+import axios from "axios";
 
+// Importing MediaPipe hands package
+import * as handsModule from "@mediapipe/hands";
+import { Camera } from "@mediapipe/camera_utils";
+
+// Connecting to the backend WebSocket server
+const socket = io("http://127.0.0.1:5000");
 
 function App() {
+
+    const [message, setMessage] = useState("");
+
+    useEffect(() => {
+        axios.get("http://127.0.0.1:5000/api/hello")
+            .then(response => {
+                setMessage(response.data.message);
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error);
+            });
+    }, []);
+
+
     const [initialPage, setInitialPage] = useState(true);
     const [username, setUsername] = useState("Guest");
-    const [currentLevel, setCurrentLevel] = useState(2);
+    const [currentLevel, setCurrentLevel] = useState(1);
+    const [currentLetters, setCurrentLetters] = useState([]);
     const [unlockedLevels, setUnlockedLevels] = useState([1,2,4])
-    const [currentLetters, setCurrentLetters] = useState(['L1', 'L2', 'L3', 'L4','L5'])
-    const [completedLetters, setCompletedLetters] = useState(['L1', 'L2']);
-    const [selectedLetter, setSelectedLetter] = useState('L1')
-    const [score, setScore] = useState(100)
+    const [completedLetters, setCompletedLetters] = useState(["A"]);
+    const [selectedLetter, setSelectedLetter] = useState('')
+    const [score, setScore] = useState(0)
     const [countdownTime, setCountdownTime] = useState(5);
-    let allLetters = ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7']
-    let hintUsage = [true, false, true, false, false, false, false]
-
+    let allLetters = ['A','B','C','D','E',"F","G","H","I",'J','K','L','M','N','O']
+    const [hintUsage, setHintUsage] = useState([]);
+    
 
     const handleStartClick = () => {
         setInitialPage(false);  // Hide the welcome-screen when start button is clicked
@@ -116,6 +138,13 @@ function App() {
         countdown.style.display = "none"
     }
 
+    // Taking first letter of the current letters as the selected letter initially
+    useEffect(() => {
+        if (currentLetters.length > 0) {
+            setSelectedLetter(currentLetters[0]);  
+        }
+    }, [currentLetters]);
+
 
     // Handle current letter after clicking
     const handleLetterClick = (letter) =>{
@@ -152,6 +181,11 @@ function App() {
                 return prevTime - 1;
             });
         }, 1000);
+
+        //After timer, run the game
+
+
+        //If detected update score and go to initial moment
     };
     
     // Decide whether to show or not the hint based on previous usage of hint for that particular letter 
@@ -177,8 +211,223 @@ function App() {
         hintDisplay(); 
     }, [selectedLetter, hintUsage]);
 
-
+    // Handling hint buttton click
+    const handleHintButtonClick = () => {
+        const hintUsedLetterIndex = allLetters.indexOf(selectedLetter);
+        
+        // Create a new array to avoid mutating state directly
+        const updatedHintUsage = [...hintUsage];
+        updatedHintUsage[hintUsedLetterIndex] = true;
     
+        setHintUsage(updatedHintUsage);
+        console.log(hintUsage);
+    };
+
+    //Handling letter switch button displaying
+    useEffect(() => {
+        const currentIndex = currentLetters.indexOf(selectedLetter);
+        const prevButton = document.querySelector(".previous-letter-switch");
+        const nextButton = document.querySelector(".next-letter-switch");
+    
+        if (prevButton) {
+            if (currentIndex === 0) {
+                prevButton.style.display = "none";
+            } else {
+                prevButton.style.display = "block";
+            }
+        }
+    
+        if (nextButton) {
+            if (currentIndex === currentLetters.length - 1) {
+                nextButton.style.display = "none";
+            } else {
+                nextButton.style.display = "block";
+            }
+        }
+    }, [selectedLetter]);
+
+    //Handling next letter button click
+    const handleNextLetterButtonClick = () => {
+        const nextLetter = currentLetters[currentLetters.indexOf(selectedLetter) + 1]
+        setSelectedLetter(nextLetter)
+    }
+
+    //Handling previous letter button click
+    const handlePreviousLetterButtonClick = () => {
+        const prevLetter = currentLetters[currentLetters.indexOf(selectedLetter) - 1]
+        setSelectedLetter(prevLetter)
+    }
+
+
+    //Requesting username
+    useEffect(() => {
+        // Make a GET request to Flask to fetch the username
+        axios.get("http://127.0.0.1:5000/api/username")
+            .then(response => {
+                setUsername(response.data.username); // Set username from the response
+            })
+            .catch(error => {
+                console.error("Error fetching username:", error);
+            });
+    }, []); // Empty dependency array ensures this runs once after component mounts
+
+
+     // Fetch initial level and letters when the app loads
+     useEffect(() => {
+        axios.get("http://127.0.0.1:5000/api/get_current_level")
+            .then(response => {
+                setCurrentLevel(response.data.level);
+                setCurrentLetters(response.data.assigned_letters);
+            })
+            .catch(error => console.error("Error fetching level:", error));
+    }, []);
+
+    // Listen for level updates from Flask
+    useEffect(() => {
+        socket.on('level_updated', (data) => {
+            setCurrentLevel(data.level);
+            setCurrentLetters(data.assigned_letters);
+        });
+
+        return () => {
+            socket.off('level_updated');
+        };
+    }, []);
+
+    // Fetch initial score from Flask
+    useEffect(() => {
+        axios.get("http://127.0.0.1:5000/api/get_score")
+            .then(response => setScore(response.data.score))
+            .catch(error => console.error("Error fetching score:", error));
+    }, []);
+
+    // Listen for real-time score updates from Flask
+    useEffect(() => {
+        socket.on("score_updated", (data) => {
+            setScore(data.score);
+        });
+
+        return () => {
+            socket.off("score_updated");
+        };
+    }, []);
+
+    // Fetching hint usage from Flask on initial load
+    useEffect(() => {
+        axios.get("http://127.0.0.1:5000/api/get_hint_usage")
+            .then(response => {
+                // Update the hintUsage state with the data from Flask
+                setHintUsage(response.data.hint_usage);
+            })
+            .catch(error => {
+                console.error("Error fetching hint usage:", error);
+            });
+    }, []);
+
+    // Function to update hintUsage in Flask whenever hintUsage changes
+    useEffect(() => {
+        if (hintUsage.length > 0) { 
+            updateHintUsage();  
+        }
+    }, [hintUsage]); 
+
+    // Function to update hintUsage in Flask
+    const updateHintUsage = () => {
+        axios.post("http://127.0.0.1:5000/api/update_hint_usage", {
+            hint_usage: hintUsage
+        })
+        .then(response => {
+            console.log("Hint usage updated:", response.data);
+        })
+        .catch(error => {
+            console.error("Error updating hint usage:", error);
+        });
+    };
+
+    const videoRef = useRef(null);
+    const canvasRef = useRef(null);
+
+    useEffect(() => {
+        const hands = new Hands({
+            locateFile: (file) => {
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+            },
+        });
+
+        hands.setOptions({
+            maxNumHands: 1,
+            modelComplexity: 1,
+            minDetectionConfidence: 0.5,
+            minTrackingConfidence: 0.6,
+        });
+
+        hands.onResults((results) => {
+            // Logging results to the console
+            console.log("MediaPipe Results:", results);
+
+            const canvas = canvasRef.current;
+            const ctx = canvas.getContext("2d");
+
+            // Clear canvas for each frame
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Mirror canvas for webcam input
+            ctx.save();
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+
+            // Draw landmarks on canvas and send them to Flask
+            if (results.multiHandLandmarks) {
+                results.multiHandLandmarks.forEach((landmarks) => {
+                    // Log each detected hand's landmarks to the console
+                    console.log("Detected Hand Landmarks:", landmarks);
+
+                    landmarks.forEach((lm) => {
+                        const x = lm.x * canvas.width;
+                        const y = lm.y * canvas.height;
+
+                        // Draw landmarks on canvas
+                        ctx.beginPath();
+                        ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                        ctx.fillStyle = "red";
+                        ctx.fill();
+                    });
+
+                    // Send landmarks to Flask in real-time via WebSocket
+                    console.log("Sending landmarks:", landmarks);
+                    socket.emit("send_landmarks", { landmarks: landmarks });
+                });
+            }
+
+            ctx.restore();
+        });
+
+        // Start the camera stream and begin hand tracking
+        const startCamera = async () => {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { width: 640, height: 480 },
+            });
+            videoRef.current.srcObject = stream;
+
+            const camera = new Camera(videoRef.current, {
+                onFrame: async () => {
+                    await hands.send({ image: videoRef.current }); // Send the current video frame to MediaPipe
+                },
+                width: 640,  // Adjust the width and height based on your requirements
+                height: 480, // Adjust the width and height based on your requirements
+            });
+
+            camera.start();
+        };
+
+        startCamera();
+
+        return () => {
+            // Cleanup code for unmounting if necessary
+        };
+    }, []);
+    
+
 
     return (<>
         {/*Conditionally hide the welcome-screen based on initialPage */}
@@ -205,6 +454,15 @@ function App() {
         </div>
         <div className='sign-related-container'>
             <div className='canvas-wrapper'>
+                <video
+                    ref={videoRef}
+                    id="videoElement"
+                    style={{ display: "block", width: "768px", height: "432px", 
+                        position:"absolute"}}
+                    width="768"
+                    height="432"
+                    autoPlay
+                ></video>
                 <Canvas/>
                 <Timer/>
                 <Notification/>
@@ -212,10 +470,10 @@ function App() {
                 <StartCountdown countdownTime={countdownTime}/>
             </div>
             
-            <Hint/>
-            <LetterSwitch/>
+            <Hint handleHintButtonClick={handleHintButtonClick}/>
+            <LetterSwitch handleNextLetterButtonClick={handleNextLetterButtonClick} handlePreviousLetterButtonClick={handlePreviousLetterButtonClick}/>
         </div>
-        <HomeButton/>
+        <HomeButton onClick={goToHome}/>
     </>);
 }
 
