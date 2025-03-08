@@ -8,8 +8,9 @@ function HomePage() {
         <>
         <HomeImg />
         <SignupButton text="🚀 Sign In" link="/signup" />
-        <Features />
         <Letters />
+        <Features />
+        
         </>
     );
 }

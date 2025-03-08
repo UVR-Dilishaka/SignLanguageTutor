@@ -143,11 +143,11 @@ if run:
                 df_landmarks = pd.DataFrame(landmarks_data)
                 landmarks_table.table(df_landmarks)
 
-            if show_landmarks_legend == False:
-                        legend_image = Image.open('/hand-landmarks.png')  # Replace with the path to your image
-                        st.image(legend_image, caption="Hand Landmark Legend", use_container_width=True)
+            # if show_landmarks_legend == False:
+            #             legend_image = Image.open('/hand-landmarks.png')  # Replace with the path to your image
+            #             st.image(legend_image, caption="Hand Landmark Legend", use_container_width=True)
 
-                        show_landmarks_legend = True
+            #             show_landmarks_legend = True
 
             # If there are angles, display them in a table
             if angle_data:

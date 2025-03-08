@@ -74,7 +74,7 @@ class RosterResource(Resource):
             'mastery_probability': mastery_prob
         }
 
-# Initialize the app
+
 app = create_app()
 
 if __name__ == '__main__':
