@@ -7,6 +7,7 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from auth import auth_ns
 from data import data_ns
+from TamilSignClassification import Tamil_predict_ns
 
 
 
@@ -21,6 +22,7 @@ def create_app(config):
 
     api.add_namespace(auth_ns)
     api.add_namespace(data_ns) 
+    api.add_namespace(Tamil_predict_ns) 
 
      
 
