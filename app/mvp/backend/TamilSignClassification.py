@@ -3,10 +3,10 @@ from flask_restx import Namespace, Resource
 import pickle
 import numpy as np
 
-# Create a namespace for prediction
+
 Tamil_predict_ns = Namespace('tamilSignPredict', description='Prediction endpoint for Tamil Sign Language Classification')
 
-# Load the trained model
+
 with open('./Model/RF.pkl', 'rb') as file:
     model = pickle.load(file)
 

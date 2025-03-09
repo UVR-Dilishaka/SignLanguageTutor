@@ -7,12 +7,22 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from auth import auth_ns
 from data import data_ns
+import atexit
+
 from TamilSignClassification import Tamil_predict_ns
+from AdoptiveTutoringSystem import adoptiveTutoring_ns
+
+
+def shutdown_logic():
+    print("Flask app is shutting down...")
+
 
 
 
 def create_app(config):
     app=Flask(__name__)
+    # Register the shutdown logic with atexit
+    atexit.register(shutdown_logic)
     app.config.from_object(config)
     db.init_app(app)
     migrate = Migrate(app, db)
@@ -23,6 +33,7 @@ def create_app(config):
     api.add_namespace(auth_ns)
     api.add_namespace(data_ns) 
     api.add_namespace(Tamil_predict_ns) 
+    api.add_namespace(adoptiveTutoring_ns)
 
      
 
