@@ -1,10 +1,7 @@
+import React, { forwardRef } from "react";
 
-function Timer(){
-    return (<>
-        <div className="timer">
-            <p>You Have:</p>
-        </div>
-    </>)
-}
+const Timer = forwardRef((props, ref) => {
+    return <div className="timer" ref={ref}>You have: {props.time}</div>;
+});
 
 export default Timer;
