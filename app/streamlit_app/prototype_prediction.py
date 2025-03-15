@@ -31,7 +31,7 @@ point_indices = [
 # Load the trained model (replace with your model's file path and loading method)
 @st.cache_resource
 def load_model():
-    with open("./Model/RF.pkl", "rb") as f:
+    with open("./Model/RF_SL.pkl", "rb") as f:
         model = pickle.load(f)
     return model
 

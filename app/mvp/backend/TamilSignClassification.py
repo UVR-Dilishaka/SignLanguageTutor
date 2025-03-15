@@ -15,7 +15,7 @@ class Predict(Resource):
     def post(self):
         data = request.get_json(force=True)
 
-        # Extract the features from the JSON data
+    
         features = np.array([
             data['Right_THUMB_MCP_angle'],
             data['Right_INDEX_MCP_angle'],
@@ -35,8 +35,7 @@ class Predict(Resource):
             data['Right_THUMB_INDEX_Abduction_angle']
         ]).reshape(1, -1)
 
-        # Make prediction using the loaded model
+        
         prediction = model.predict(features)
 
-        # Return the prediction as a JSON response
         return jsonify({'prediction': int(prediction[0])})
