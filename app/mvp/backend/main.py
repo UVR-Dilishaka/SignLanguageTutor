@@ -33,7 +33,7 @@ def create_app(config):
     api.add_namespace(auth_ns)
     api.add_namespace(data_ns) 
     api.add_namespace(Tamil_predict_ns) 
-    api.add_namespace(adoptiveTutoring_ns)
+    #api.add_namespace(adoptiveTutoring_ns)
 
      
 

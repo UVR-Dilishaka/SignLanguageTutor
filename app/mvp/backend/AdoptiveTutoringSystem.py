@@ -44,19 +44,19 @@ class MultiarmedBandit(Resource):
 
 
 
-with open('rouster_model.pkl', 'rb') as file:
-    model = pickle.load(file)
+# with open('rouster_model.pkl', 'rb') as file:
+#     model = pickle.load(file)
 
-@adoptiveTutoring_ns.route('/updatestudentmastery/<int:student_id>/<int:sign_id>/<int:correct>')
-class UpdateMastery(Resource):
+# @adoptiveTutoring_ns.route('/updatestudentmastery/<int:student_id>/<int:sign_id>/<int:correct>')
+# class UpdateMastery(Resource):
 
 
-    def post(self, student_id, sign_id, correct):
-        new_state = model.update_state(sign_id, student_id, correct)
-        new_estimated_mastery = model.get_mastery_prob(sign_id, student_id)
-        performance_history = PerformanceHistory(student_id=student_id, sign_id=sign_id, mastery_level=new_estimated_mastery)
-        performance_history.save()
-        student_sign_mastery = StudentSignMastery.query.filter_by(student_id=student_id, sign_id=sign_id).first()
+#     def post(self, student_id, sign_id, correct):
+#         new_state = model.update_state(sign_id, student_id, correct)
+#         new_estimated_mastery = model.get_mastery_prob(sign_id, student_id)
+#         performance_history = PerformanceHistory(student_id=student_id, sign_id=sign_id, mastery_level=new_estimated_mastery)
+#         performance_history.save()
+#         student_sign_mastery = StudentSignMastery.query.filter_by(student_id=student_id, sign_id=sign_id).first()
 
 
 

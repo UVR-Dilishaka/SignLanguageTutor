@@ -70,9 +70,9 @@ class Login(Resource):
             return jsonify({"message":f"User with username {username} does not exist"})
         
         if check_password_hash(db_user.password, password):
-            acess_token = create_access_token(identity=db_user.username)
+            access_token = create_access_token(identity=db_user.username)
             refresh_token = create_refresh_token(identity=db_user.username)
-            return jsonify({"acess_token":acess_token,"refresh_token":refresh_token})
+            return jsonify({"access_token":access_token,"refresh_token":refresh_token})
 
 
 @auth_ns.route('/refresh')
@@ -80,6 +80,6 @@ class Refresh(Resource):
     @jwt_required(refresh=True)
     def post(self):
         current_user = get_jwt_identity()
-        acess_token = create_access_token(identity='username')
-        return jsonify({"acess_token":acess_token})
+        access_token = create_access_token(identity=current_user)
+        return jsonify({"access_token":access_token})
     

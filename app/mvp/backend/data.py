@@ -3,10 +3,9 @@ from flask_restx import Namespace, Resource,fields
 from flask import request
 from model import User,Sign,Activity,PerformanceHistory,StudentSignMastery
 from flask_jwt_extended import jwt_required
+from flask_jwt_extended import get_jwt_identity
 
 data_ns = Namespace('data', description='Authentication operations')
-
-
 
 
 user_model = data_ns.model(
@@ -72,15 +71,6 @@ class HelloResource(Resource):
     
 
 
-@data_ns.route('/ping-public')
-class HelloResource(Resource):
-    
-    def get (self):
-        return {"txt":"public route acessed"}
-    
-
-#setting up routes for db crud operations
-
     
 @data_ns.route('/users')
 class UserResource(Resource):
@@ -91,45 +81,44 @@ class UserResource(Resource):
         users = User.query.all()
         return users
 
-    @data_ns.marshal_with(user_model)
-    @data_ns.expect(user_model)
-    def post(self):
-        """Create a new user"""
-        data = request.get_json()
-        new_user = User(
-            username=data.get('username'),
-            email=data.get('email'),
-            password=data.get('password'),
-            isteacher=data.get('isteacher')
-        )
-        new_user.save()
-        return new_user, 201
 
 
-@data_ns.route('/user/<int:id>')
+@data_ns.route('/user/<string:username>')
 class SingleUserResource(Resource):
 
+    def options(self, username):  # Handle preflight requests
+        return {}, 200
+
+    @jwt_required()  # Requires a valid JWT to access
     @data_ns.marshal_with(user_model)
-    def get(self, id):
-        """Get a user by ID"""
-        user = User.query.get_or_404(id)
+    def get(self, username):
+        """Get a user by username"""
+        current_user = get_jwt_identity()  # Get the current user's identity from JWT
+        user = User.query.filter_by(username=username).first_or_404()
+
+        # Validate if the current user matches the user being accessed
+        if user.username != current_user:
+            return {"message": "You do not have permission to access this user."}, 403
+
         return user
 
-    @data_ns.marshal_with(user_model)
-    def put(self, id):
-        """Update a user by ID"""
-        user_to_update = User.query.get_or_404(id)
-        data = request.get_json()
-        user_to_update.update(data.get('username'), data.get('password'))
-        return user_to_update
 
-    @data_ns.marshal_with(user_model)
-    def delete(self, id):
-        """Delete a user by ID"""
-        user_to_delete = User.query.get_or_404(id)
-        user_to_delete.delete()
-        return user_to_delete
 
+
+@data_ns.route('/is_teacher')
+class IsTeacher(Resource):
+
+    @jwt_required()  # Requires a valid JWT to access
+    def get(self):
+        """Check if the current user is a teacher"""
+        current_user = get_jwt_identity()  # Get the current user's identity from JWT
+        user = User.query.filter_by(username=current_user).first()
+
+        if user is None:
+            return {"message": "User not found"}, 404
+
+        # Return True if the user is a teacher, otherwise False
+        return {"is_teacher": user.isteacher}, 200
 
 
 

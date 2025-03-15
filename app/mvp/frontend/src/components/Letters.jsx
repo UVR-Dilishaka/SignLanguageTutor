@@ -15,7 +15,7 @@ const letters = [
 const Letters = () => {
   return (
     <section>
-      <h2>🔠 Learn the Letters</h2>
+      <h2 className="letters-title">🔠 Learn the Letters</h2>
       <div className="letters">
         {letters.map((letter, index) => (
           <LetterCard key={index} text={letter.text} color={letter.color} />

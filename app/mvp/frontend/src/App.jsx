@@ -9,6 +9,7 @@ import Test from "./pages/TestPage";
 import Profile from "./pages/ProfilePage";
 import TeacherPortal from './pages/TeacherPortalPage';
 
+
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 
@@ -18,7 +19,7 @@ function App() {
     <Router>
     <div className="container">
     
-      <Header />
+      
       <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/signup" element={<Signup />} />
@@ -26,8 +27,9 @@ function App() {
           <Route path="/testping" element={<Test />} />
           <Route path="/teacherportal" element={<TeacherPortal />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/testpage" element={<Test />} />
       </Routes>
-      <Footer />
+      
 
     </div>
     </Router>

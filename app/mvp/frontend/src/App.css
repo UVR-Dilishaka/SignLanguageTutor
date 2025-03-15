@@ -3,14 +3,18 @@
 /* Define color variables */
 :root {
   --primary-color: #ff4081;
+  --header-title: #9C27B0;
   --secondary-color: #ff8a65;
   --secondary-hover: #e64a19;
-  --background-color: #fff7e6;
+  /* --background-color: #fff7e6; */
+  --background-colour:#EAFFC1;
   --container-bg: #faff93;
   --sub-container-bg:#d6c1ff;
   --text-color: #444;
   --subtext-color: #616161;
   --shadow-color: rgba(0, 0, 0, 0.2);
+  --button-color: #6A89CC;
+  --button-hover: #B8E2F5;
 }
 
 body {
@@ -28,8 +32,7 @@ body {
   padding: 0;
   margin: auto;
   background: var( --background-color);
-  border-radius: 15px;
-
+  
 }
 
 
@@ -44,8 +47,8 @@ body {
 
 
 
-h1 {
-  color: var(--primary-color);
+.header-title {
+  color: var(--header-title);
   font-size: 40px;
   letter-spacing: 2px;
 }
@@ -58,7 +61,7 @@ h1 {
 .SignUpbtn {
   display: inline-block;
   padding: 12px 24px;
-  background: var(--secondary-color);
+  background: var(--button-color);
   color: white;
   font-size: 22px;
   font-weight: bold;
@@ -68,9 +71,11 @@ h1 {
   transition: 0.3s;
 }
 
-.btn:hover {
-  background: var(--secondary-hover);
+.SignUpbtn:hover {
+  background: var(--button-hover);
 }
+
+
 
 .image-container img {
   width: 80%;
@@ -108,14 +113,21 @@ h1 {
 .feature:nth-child(5) { background: #D1C4E9; color: #673AB7; } /* Purple */
 
 
+.letters-title {
+
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
 .letters {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   margin-top: 30px;
+  margin-bottom: 30px;
   gap: 10px;
 }
-
+ 
 .letter {
   font-size: 28px;
   padding: 10px 18px;
@@ -141,14 +153,13 @@ h1 {
   background: var(--sub-container-bg);
   padding: 30px;
   border-radius: 15px;
-  box-shadow: 0 6px 12px var(--shadow-color);
   max-width: 400px;
   margin: auto;
   text-align: center;
 }
 
 .form-container h2 {
-  color: var(--primary-color);
+  color: var(--text-color);
   font-size: 28px;
   margin-bottom: 20px;
 }
@@ -171,7 +182,7 @@ h1 {
 .auth-form .form-control {
   width: 100%;
   padding: 10px;
-  border: 2px solid var(--sub-container-bg);
+  /* border: 2px solid var(--sub-container-bg); */
   border-radius: 8px;
   font-size: 16px;
   color: var(--text-color);
@@ -200,7 +211,7 @@ h1 {
 
 /* Common button styling */
 .auth-form .btn-primary {
-  background: var(--secondary-color);
+  background: var(--button-color);
   color: white;
   font-size: 18px;
   font-weight: bold;
@@ -212,16 +223,24 @@ h1 {
 }
 
 
-
 .auth-form .btn-primary:hover {
-  background: var(--secondary-hover);
+  background: var(--button-hover);
+  color: var(--text-color);
 }
+
+.checkbox-input {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Adjust spacing between checkbox and label */
+}
+
 
 /* Error message styling */
 .error-text {
-  color: red;
+  color: var(--header-title);
   font-size: 14px;
-  margin-top: -10px;
+  margin-top: 0px;
+  margin-left: 2pt;
   text-align: left;
 }
 
@@ -273,8 +292,6 @@ h1 {
   border-color: #4338CA;
   box-shadow: 0 0 8px rgba(79, 70, 229, 0.5); /* Glow effect */
 }
-
-
 
 .switch-buttons {
   display: flex;
@@ -363,6 +380,7 @@ h1 {
   transition: background 0.3s;
 }
 
+
 .sidebar button:hover {
   background-color: var(--secondary-hover);
 }
@@ -391,3 +409,5 @@ h1 {
 .chart-container {
   height: 300px;
 }
+
+
