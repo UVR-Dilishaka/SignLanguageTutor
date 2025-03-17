@@ -1,66 +1,52 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import { useNavigate, Link, Outlet } from "react-router-dom";
+import ProfileHeader from "../components/profileHeader";
+import { fetchUserData } from "../util/fetchuser";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import Footer from "../components/Footer";
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState({});
+  const [masteryData, setMasteryData] = useState([]);
+  const [signs, setSigns] = useState([]);
+  const [selectedLanguage, setSelectedLanguage] = useState("Sinhala"); // Default to Sinhala
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        // Get token from local storage
-        const accessToken = localStorage.getItem("access_token");
-        if (!accessToken) {
-          console.error("No access token found");
-          navigate("/login"); // Redirect to login if no token
-          return;
-        }
-
-        // Decode the token to extract username
-        const decodedToken = jwtDecode(accessToken);
-        const username = decodedToken.sub; // Adjust based on JWT structure
-
-        if (!username) {
-          console.error("Username not found in token");
-          return;
-        }
-
-        // Fetch user data from backend
-        const response = await fetch(`http://127.0.0.1:5000/data/user/${username}`, {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-          setUserData(data);
-        } else {
-          console.error("Failed to fetch user data:", data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+    const loadUserData = async () => {
+      const data = await fetchUserData(navigate);
+      if (data) {
+        setUserData(data);
+        
       }
     };
 
-    fetchUserData();
+    loadUserData();
+    
   }, [navigate]);
 
+  
+
   return (
-    <div className="profile-page">
-      <h1>Profile Page</h1>
-      {userData.username ? (
-        <div>
-          <p><strong>Username:</strong> {userData.username}</p>
-          <p><strong>Email:</strong> {userData.email}</p>
-          <p><strong>Role:</strong> {userData.isteacher ? "Teacher" : "Student"}</p>
+    <div className="profile-container">
+      <ProfileHeader username={userData.username} />
+      <div className="profile-content">
+        <div className="sidebar">
+          <nav className="profile-menu">
+            <Link to="/profile" className="menu-item">Profile</Link>
+            <Link to="/profile/play" className="menu-item">Play</Link>
+          </nav>
         </div>
-      ) : (
-        <p>Loading user data...</p>
-      )}
+
+        <div className="profile-main">
+          <div className="profile-card">
+            <Outlet />
+          </div>
+
+          
+        </div>
+      </div>
+      <Footer />
     </div>
   );
 };

@@ -1,0 +1,83 @@
+/* Profile Page Styling */
+
+:root {
+    --background-color: #EAFFC1; /* Light green background */
+    --header-bg: #88AB8E; /* Header background */
+    --text-color: #333; /* General text color */
+    --accent-color: #517664; /* Accent color for highlights */
+    --sidebar-bg: #B2C8BA; /* Sidebar background */
+    --hover-bg: #A5C9A6; /* Hover effect */
+    --card-bg: #FFFFFF; /* Card background */
+    --border-radius: 10px;
+    --shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    background-color: var(--background-color);
+    font-family: 'Arial', sans-serif;
+    color: var(--text-color);
+}
+
+.profile-container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.profile-sidebar {
+    background-color: var(--sidebar-bg);
+    padding: 20px;
+    width: 250px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-sidebar a {
+    text-decoration: none;
+    color: var(--text-color);
+    padding: 10px;
+    border-radius: var(--border-radius);
+    margin: 5px 0;
+    transition: background 0.3s;
+}
+
+.profile-sidebar a:hover {
+    background-color: var(--hover-bg);
+}
+
+.profile-content {
+    flex-grow: 1;
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.profile-header {
+    background-color: var(--header-bg);
+    color: white;
+    padding: 15px;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+}
+
+.profile-info div {
+    background-color: var(--background-color);
+    padding: 10px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
