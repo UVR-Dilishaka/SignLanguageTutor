@@ -62,7 +62,7 @@ function App() {
     const [withinDistance, setwithinDistance] = useState(true); // Check if the hand is within specified distance
     const [notDetectingHands, setNotDetectingHands] = useState(false); // Check if landmark arrays are empty
     const [matches, setMatches] = useState(false); // If the backend detects the sign
-    const [timeLeft, setTimeLeft] = useState(10);
+    const [timeLeft, setTimeLeft] = useState(20000);
     const [successNotficationNeeded, setSuccessNotificationNeeded] = useState(false)
     const [timesupNotificationNeeded, setTimesupNotificationNeeded] = useState(false)
     
@@ -143,14 +143,19 @@ function App() {
         const startNote = document.querySelector(".start-note")
         const timer = document.querySelector(".timer")
         const countdown = document.querySelector(".start-countdown")
+        const canvas = document.querySelector('.canvas')
+        const videoElement = document.querySelector('#videoElement')
 
         startNote.style.display = "block"
         timer.style.display = "none"
         countdown.style.display = "none"
+        canvas.style.display = "none"
+        videoElement.style.display = "none"
         setgameRunning(false);
         setMatches(false);
         setSuccessNotificationNeeded(false);
         setTimesupNotificationNeeded(false);
+
     }
 
     // Taking first letter of the current letters as the selected letter initially
@@ -175,26 +180,72 @@ function App() {
         initialMoment()
     }
 
+    const gameTimerRef = useRef(null);
 
-    //Handle after clicking start in game window
+    const startGameTimer = () => {
+        if (gameTimerRef.current) {
+            clearInterval(gameTimerRef.current);     // This line ensures no old intervals are running
+        }
+    
+        setgameRunning(true); 
+        setTimeLeft(20000);     // Reset the timer when game starts
+    
+        gameTimerRef.current = setInterval(() => {
+            setTimeLeft((prevTime) => {
+                
+                if (prevTime <= 0) {
+                    setwithinDistance(true);
+                    setNotDetectingHands(false);
+                    setgameRunning(false);
+                    console.log("Timer finished. No match detected.");
+                    setTimesupNotificationNeeded(true)
+                    return 0;
+                }
+                return prevTime - 50;
+            });
+        }, 50);
+    };
+
+    //Stops the timer and send time if match is detected
+        useEffect(() => {
+            if (gameRunning && matches){
+                setgameRunning(false);
+                setTimeLeft(timeLeft);
+                console.log(`Match detected at time: ${timeLeft / 1000}s`);
+                socket.emit("match_detected", { timeLeft: timeLeft });
+                //document.querySelector('.canvas').style.display = 'none'
+                //document.querySelector('#videoElement').style.display = 'none'
+                setSuccessNotificationNeeded(true)
+            }
+        }, [matches,gameRunning])
+    
+    // Stops the timer in real time whenever gameRunning becomes false
+    useEffect(() => {
+        if (!gameRunning && gameTimerRef.current) {
+            clearInterval(gameTimerRef.current);
+            gameTimerRef.current = null;
+            console.log("Timer stopped because gameRunning == false.");
+        }
+    }, [gameRunning]); 
+    
+    // Handle game start click
     const handleGameStartClick = () => {
-        setCountdownTime(5); 
+        setMatches(false);
+        setCountdownTime(5);
         const startNote = document.querySelector(".start-note");
         const countdown = document.querySelector(".start-countdown");
     
-        if (startNote) startNote.style.display = "none"; 
-        if (countdown) countdown.style.display = "block"; 
+        if (startNote) startNote.style.display = "none";
+        if (countdown) countdown.style.display = "block";
     
-        // Start the countdown
         const countdownTimer = setInterval(() => {
-            setCountdownTime(prevTime => {
+            setCountdownTime((prevTime) => {
                 if (prevTime <= 1) {
                     clearInterval(countdownTimer);
                     if (countdown) countdown.style.display = "none";
     
-                    // Start the game timer AFTER the countdown is done
+                    // Starts the game timer AFTER countdown ends
                     startGameTimer();
-                    
                     return 0;
                 }
                 return prevTime - 1;
@@ -202,42 +253,14 @@ function App() {
         }, 1000);
     };
     
-    const startGameTimer = () => {
-        let timeLeft = 20000; // 10 seconds
-    
-        const gameTimer = setInterval(() => {
-            // 1. While timer is running (Update variables here)
-            setgameRunning(true);
-            console.log(`Time left: ${timeLeft / 1000}s`);
-            let timeRemaining = (Math.floor(timeLeft/1000))
-            document.querySelector('.timer').innerHTML = `You have : ${timeRemaining}`
-    
-            if (matches) {
-                // 3. If matches become true (Stop timer and log time)
-                setgameRunning(false);
-                setTimeLeft(timeLeft);
-                console.log(`Match detected at time: ${timeLeft / 1000}s`);
-                document.querySelector('.canvas').style.display = 'none'
-                document.querySelector('#videoElement').style.display = 'none'
-                setSuccessNotificationNeeded(true)
-                clearInterval(gameTimer);
-                return;
-            }
-    
-            timeLeft -= 50; // Decrease time by 50ms per frame
-    
-            if (timeLeft <= 0) {
-                // 2. If time is out (Handle timeout scenario)
-                setgameRunning(false);
-                clearInterval(gameTimer);
-                console.log("Timer finished. No match detected.");
-                document.querySelector('.canvas').style.display = 'none'
-                document.querySelector('#videoElement').style.display = 'none'
-                setTimesupNotificationNeeded(true)
-                return;
-            }
-        }, 50); // Runs every 50ms
-    };
+    // Display updated time in timer component
+    useEffect(() => {
+        if (timeLeft > 0) {
+            document.querySelector(".timer").innerHTML = `You have: ${Math.floor(timeLeft / 1000)}`;
+            console.log('Time left:', {timeLeft})
+        }
+    }, [timeLeft]); // Update UI whenever timeLeft changes
+
     
     
     // Decide whether to show or not the hint based on previous usage of hint for that particular letter 
@@ -411,6 +434,8 @@ function App() {
     // useEffect function for detecting landmarks and sending them via websockets
     useEffect(() => {
         if (gameRunning === true && matches === false) {
+            socket.emit("hand_landmarks", { hands: [] });
+
             const videoElement = document.getElementById("videoElement");
             const canvasElement = document.querySelector(".canvas");
             const ctx = canvasElement.getContext("2d");
@@ -427,8 +452,8 @@ function App() {
             hands.setOptions({
                 maxNumHands: 1,
                 modelComplexity: 1,
-                minDetectionConfidence: 0.5,
-                minTrackingConfidence: 0.6,
+                minDetectionConfidence: 0.7,
+                minTrackingConfidence: 0.7,
             });
     
             hands.onResults((results) => {
@@ -532,6 +557,7 @@ function App() {
         // If the hands are not detecting
         if (gameRunning === true && notDetectingHands === true) {
             notificationBox.style.display = "block"
+            notificationBox.style.backgroundColor = "hsl(0, 0%, 100%);"
             notificationBox.innerHTML = "⚠️ Can't detect any hands in the frame"
             canvas.style.filter = "blur(5px)";
             videoElement.style.filter = "blur(5px)";
@@ -540,13 +566,14 @@ function App() {
         // If the hands are not in the distance
         else if (gameRunning ==true && withinDistance === false){
             notificationBox.style.display = "block"
+            notificationBox.style.backgroundColor = "hsl(0, 0%, 100%);"
             notificationBox.innerHTML = "⚠️ Please move hands closer to the camera"
             canvas.style.filter = "blur(5px)";
             videoElement.style.filter = "blur(5px)";
         }
 
         // If the completed
-        else if (successNotficationNeeded === true){
+        else if (!gameRunning && successNotficationNeeded === true){
             let countdown = 5;
             notificationBox.style.display = "block";
             notificationBox.style.backgroundColor = "hsl(148, 100%, 84%)";
@@ -567,7 +594,7 @@ function App() {
         }
 
         // If couldn't complete
-        else if (timesupNotificationNeeded === true){
+        else if (!gameRunning && timesupNotificationNeeded === true){
             let countdown = 5;
             notificationBox.style.display = "block";
             notificationBox.style.backgroundColor = "hsl(0, 100%, 88%)";
@@ -590,7 +617,16 @@ function App() {
     }, [gameRunning, notDetectingHands, withinDistance, successNotficationNeeded, timesupNotificationNeeded]);
 
     
+        // Listens to match_detected variable in backend
+        useEffect(() => {
+            socket.on("match_status", (data) => {
+                setMatches(data);  // Update the state based on the received value
+                console.log("Matches:", {matches})
+            });
     
+            return () => socket.off("match_status");
+        }, []);
+
 
 
     

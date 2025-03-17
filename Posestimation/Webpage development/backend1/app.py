@@ -4,6 +4,7 @@ from flask_socketio import SocketIO, emit
 from threading import Thread
 import time
 import numpy as np
+import pickle
 
 
 app = Flask(__name__)
@@ -25,6 +26,12 @@ hint_usage = [True,False,True,False,False,
               False,False,False,False,False]
 score = 0
 selected_letter = ""
+allowed_time = 20
+match_detected = False
+
+model_path = "D:/Yr2/DSGP/Virtual Environment/DSGP/web_testing/backend1/RF.pkl"
+with open(model_path, 'rb') as f:
+    model = pickle.load(f)
 
 
 # Testing if flask is connected
@@ -99,12 +106,34 @@ def update_hint_usage():
     print(hint_usage)
     return jsonify({"message": "Hint usage updated", "hint_usage": hint_usage})
 
+# Function to predict using ML model
+def predict_letter(angles):
+    input_data = np.array([angles])
+    predicted_letter = model.predict(input_data)[0]
+    print("predicted letter :", predicted_letter)
+
+    if predicted_letter == all_letters.index(selected_letter)+1:
+        match_detected = True
+        print(f"Match detected: {predicted_letter}")
+        socketio.emit("match_status", match_detected)
+        # Do score changing and other stuff here
+
+# Function to receive detected time
+@socketio.on('match_detected')
+def handle_match_detected(data):
+    time_left = data.get('timeLeft')
+    print(f"Match detected at {time_left / 1000}s")
+    # Use the time for calculating time remaining and other things
+    # Then reset time_left
+
+
 # Handle receiving landmarks from the client
 @socketio.on('hand_landmarks')
 def handle_landmarks(data):
     landmarks_array = json_to_numpy(data)
     angles = angle_listing(landmarks_array[0])
     print(angles)
+    predict_letter(angles)
 
 def json_to_numpy(data):
     if "hands" in data and isinstance(data["hands"], list) and len(data["hands"]) > 0:
@@ -151,6 +180,8 @@ def angle_listing(landmarks):
     # Calculate angles in bulk
     angle_list = calculate_angle_bulk(landmarks, point_indices)
     return angle_list
+
+# Sending the match_detected value using websockets
 
 
 if __name__ == '__main__':
