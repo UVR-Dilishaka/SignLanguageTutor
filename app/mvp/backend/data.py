@@ -70,6 +70,12 @@ class HelloResource(Resource):
         return {"txt":"protected route acessed"}
     
 
+@data_ns.route('/ping')
+class HelloResource(Resource):
+    def get (self):
+        return {"txt":"unprotected route acessed"}
+    
+
 
     
 @data_ns.route('/users')
@@ -86,11 +92,8 @@ class UserResource(Resource):
 @data_ns.route('/user/<string:username>')
 class SingleUserResource(Resource):
 
-    def options(self, username):  # Handle preflight requests
-        return {}, 200
-
-    @jwt_required()  # Requires a valid JWT to access
-    @data_ns.marshal_with(user_model)
+    @jwt_required()
+    @data_ns.marshal_with(user_model) 
     def get(self, username):
         """Get a user by username"""
         current_user = get_jwt_identity()  # Get the current user's identity from JWT
@@ -101,7 +104,6 @@ class SingleUserResource(Resource):
             return {"message": "You do not have permission to access this user."}, 403
 
         return user
-
 
 
 
