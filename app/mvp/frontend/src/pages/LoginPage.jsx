@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import FormInput from "../components/FormInput";
 import { Link, useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 import "../App.css";
 
 const LoginPage = () => {
@@ -33,12 +34,13 @@ const LoginPage = () => {
         });
 
         const data = await response.json();
+        
 
         if (response.ok) {
           if (data.access_token) {
             localStorage.setItem("access_token", data.access_token);
             localStorage.setItem("refresh_token", data.refresh_token);
-            alert("Login successful");
+            
             navigate("/profile");
           } else {
             setErrors((prevErrors) => ({ ...prevErrors, username: "Invalid username or password" }));
@@ -54,6 +56,8 @@ const LoginPage = () => {
   };
 
   return (
+    <>
+    <Header />
     <div className="container">
       <div className="form-container text-center">
         <h2>Login</h2>
@@ -83,6 +87,7 @@ const LoginPage = () => {
         <p>Don't have an account? <Link to="/signup">Sign up</Link></p>
       </div>
     </div>
+    </>
   );
 };
 

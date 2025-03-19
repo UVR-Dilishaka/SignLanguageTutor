@@ -54,6 +54,17 @@ function App() {
     const [countdownTime, setCountdownTime] = useState(5);
     let allLetters = ['A','B','C','D','E',"F","G","H","I",'J','K','L','M','N','O']
     const [hintUsage, setHintUsage] = useState([]);
+    const [gameRunning, setgameRunning] = useState(false);
+    
+    
+    // State variables for running game
+    const notificationRef = useRef(null);
+    const [withinDistance, setwithinDistance] = useState(true); // Check if the hand is within specified distance
+    const [notDetectingHands, setNotDetectingHands] = useState(false); // Check if landmark arrays are empty
+    const [matches, setMatches] = useState(false); // If the backend detects the sign
+    const [timeLeft, setTimeLeft] = useState(20000);
+    const [successNotficationNeeded, setSuccessNotificationNeeded] = useState(false)
+    const [timesupNotificationNeeded, setTimesupNotificationNeeded] = useState(false)
     
 
     const handleStartClick = () => {
@@ -132,10 +143,19 @@ function App() {
         const startNote = document.querySelector(".start-note")
         const timer = document.querySelector(".timer")
         const countdown = document.querySelector(".start-countdown")
+        const canvas = document.querySelector('.canvas')
+        const videoElement = document.querySelector('#videoElement')
 
         startNote.style.display = "block"
         timer.style.display = "none"
         countdown.style.display = "none"
+        canvas.style.display = "none"
+        videoElement.style.display = "none"
+        setgameRunning(false);
+        setMatches(false);
+        setSuccessNotificationNeeded(false);
+        setTimesupNotificationNeeded(false);
+
     }
 
     // Taking first letter of the current letters as the selected letter initially
@@ -160,33 +180,88 @@ function App() {
         initialMoment()
     }
 
+    const gameTimerRef = useRef(null);
 
-    //Handle after clicking start in game window
+    const startGameTimer = () => {
+        if (gameTimerRef.current) {
+            clearInterval(gameTimerRef.current);     // This line ensures no old intervals are running
+        }
+    
+        setgameRunning(true); 
+        setTimeLeft(20000);     // Reset the timer when game starts
+    
+        gameTimerRef.current = setInterval(() => {
+            setTimeLeft((prevTime) => {
+                
+                if (prevTime <= 0) {
+                    setwithinDistance(true);
+                    setNotDetectingHands(false);
+                    setgameRunning(false);
+                    console.log("Timer finished. No match detected.");
+                    setTimesupNotificationNeeded(true)
+                    return 0;
+                }
+                return prevTime - 50;
+            });
+        }, 50);
+    };
+
+    //Stops the timer and send time if match is detected
+        useEffect(() => {
+            if (gameRunning && matches){
+                setgameRunning(false);
+                setTimeLeft(timeLeft);
+                console.log(`Match detected at time: ${timeLeft / 1000}s`);
+                socket.emit("match_detected", { timeLeft: timeLeft });
+                //document.querySelector('.canvas').style.display = 'none'
+                //document.querySelector('#videoElement').style.display = 'none'
+                setSuccessNotificationNeeded(true)
+            }
+        }, [matches,gameRunning])
+    
+    // Stops the timer in real time whenever gameRunning becomes false
+    useEffect(() => {
+        if (!gameRunning && gameTimerRef.current) {
+            clearInterval(gameTimerRef.current);
+            gameTimerRef.current = null;
+            console.log("Timer stopped because gameRunning == false.");
+        }
+    }, [gameRunning]); 
+    
+    // Handle game start click
     const handleGameStartClick = () => {
-        setCountdownTime(5); 
+        setMatches(false);
+        setCountdownTime(5);
         const startNote = document.querySelector(".start-note");
         const countdown = document.querySelector(".start-countdown");
     
-        if (startNote) startNote.style.display = "none"; 
-        if (countdown) countdown.style.display = "block"; 
+        if (startNote) startNote.style.display = "none";
+        if (countdown) countdown.style.display = "block";
     
-        // Start the countdown
-        const timer = setInterval(() => {
-            setCountdownTime(prevTime => {
+        const countdownTimer = setInterval(() => {
+            setCountdownTime((prevTime) => {
                 if (prevTime <= 1) {
-                    clearInterval(timer);
+                    clearInterval(countdownTimer);
                     if (countdown) countdown.style.display = "none";
+    
+                    // Starts the game timer AFTER countdown ends
+                    startGameTimer();
                     return 0;
                 }
                 return prevTime - 1;
             });
         }, 1000);
-
-        //After timer, run the game
-
-
-        //If detected update score and go to initial moment
     };
+    
+    // Display updated time in timer component
+    useEffect(() => {
+        if (timeLeft > 0) {
+            document.querySelector(".timer").innerHTML = `You have: ${Math.floor(timeLeft / 1000)}`;
+            console.log('Time left:', {timeLeft})
+        }
+    }, [timeLeft]); // Update UI whenever timeLeft changes
+
+    
     
     // Decide whether to show or not the hint based on previous usage of hint for that particular letter 
     const hintDisplay = () => {
@@ -250,12 +325,14 @@ function App() {
     const handleNextLetterButtonClick = () => {
         const nextLetter = currentLetters[currentLetters.indexOf(selectedLetter) + 1]
         setSelectedLetter(nextLetter)
+        initialMoment()
     }
 
     //Handling previous letter button click
     const handlePreviousLetterButtonClick = () => {
         const prevLetter = currentLetters[currentLetters.indexOf(selectedLetter) - 1]
         setSelectedLetter(prevLetter)
+        initialMoment();
     }
 
 
@@ -344,91 +421,217 @@ function App() {
         });
     };
 
-    const videoRef = useRef(null);
-    const canvasRef = useRef(null);
-
+    // Fucntion to update flask variable whenever selectedLetter changes
     useEffect(() => {
-        const hands = new Hands({
-            locateFile: (file) => {
-                return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-            },
-        });
+        if (selectedLetter) {
+            socket.emit("update_selected_letter", { letter: selectedLetter });
+        }
+    }, [selectedLetter]);
 
-        hands.setOptions({
-            maxNumHands: 1,
-            modelComplexity: 1,
-            minDetectionConfidence: 0.5,
-            minTrackingConfidence: 0.6,
-        });
-
-        hands.onResults((results) => {
-            // Logging results to the console
-            console.log("MediaPipe Results:", results);
-
-            const canvas = canvasRef.current;
-            const ctx = canvas.getContext("2d");
-
-            // Clear canvas for each frame
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Mirror canvas for webcam input
-            ctx.save();
-            ctx.translate(canvas.width, 0);
-            ctx.scale(-1, 1);
-
-            // Draw landmarks on canvas and send them to Flask
-            if (results.multiHandLandmarks) {
-                results.multiHandLandmarks.forEach((landmarks) => {
-                    // Log each detected hand's landmarks to the console
-                    console.log("Detected Hand Landmarks:", landmarks);
-
-                    landmarks.forEach((lm) => {
-                        const x = lm.x * canvas.width;
-                        const y = lm.y * canvas.height;
-
-                        // Draw landmarks on canvas
-                        ctx.beginPath();
-                        ctx.arc(x, y, 5, 0, 2 * Math.PI);
-                        ctx.fillStyle = "red";
-                        ctx.fill();
-                    });
-
-                    // Send landmarks to Flask in real-time via WebSocket
-                    console.log("Sending landmarks:", landmarks);
-                    socket.emit("send_landmarks", { landmarks: landmarks });
-                });
-            }
-
-            ctx.restore();
-        });
-
-        // Start the camera stream and begin hand tracking
-        const startCamera = async () => {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: { width: 640, height: 480 },
-            });
-            videoRef.current.srcObject = stream;
-
-            const camera = new Camera(videoRef.current, {
-                onFrame: async () => {
-                    await hands.send({ image: videoRef.current }); // Send the current video frame to MediaPipe
-                },
-                width: 640,  // Adjust the width and height based on your requirements
-                height: 480, // Adjust the width and height based on your requirements
-            });
-
-            camera.start();
-        };
-
-        startCamera();
-
-        return () => {
-            // Cleanup code for unmounting if necessary
-        };
-    }, []);
     
 
 
+    // useEffect function for detecting landmarks and sending them via websockets
+    useEffect(() => {
+        if (gameRunning === true && matches === false) {
+            socket.emit("hand_landmarks", { hands: [] });
+
+            const videoElement = document.getElementById("videoElement");
+            const canvasElement = document.querySelector(".canvas");
+            const ctx = canvasElement.getContext("2d");
+            const timer = document.querySelector(".timer")
+
+            videoElement.style.display = 'block'
+            canvasElement.style.display = 'block'
+            timer.style.display = 'block'
+    
+            const hands = new Hands({
+                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
+            });
+    
+            hands.setOptions({
+                maxNumHands: 1,
+                modelComplexity: 1,
+                minDetectionConfidence: 0.7,
+                minTrackingConfidence: 0.7,
+            });
+    
+            hands.onResults((results) => {
+                ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    
+                ctx.save();
+                ctx.translate(canvasElement.width, 0);
+                ctx.scale(-1, 1);
+    
+                if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                    setNotDetectingHands(false)
+                    results.multiHandLandmarks.forEach((landmarks) => {
+                        landmarks.forEach((lm) => {
+                            const x = lm.x * canvasElement.width;
+                            const y = lm.y * canvasElement.height;
+    
+                            ctx.beginPath();
+                            ctx.arc(x, y, 8, 0, 2 * Math.PI);
+                            ctx.fillStyle = "GreenYellow";
+                            ctx.fill();
+                        });
+                    });
+    
+                    const handData = results.multiHandLandmarks.map(hand => 
+                        hand.map(lm => [lm.x, lm.y, lm.z])
+                    );
+    
+                    socket.emit("hand_landmarks", { hands: handData });
+    
+    
+                    // Calculate reference line lengths
+                    const wrist = handData[0][0]; // Corrected indexing
+                    const middle_mcp = handData[0][9];
+    
+                    const refLine1Length = Math.sqrt(
+                        (middle_mcp[0] - wrist[0]) ** 2 +
+                        (middle_mcp[1] - wrist[1]) ** 2 +
+                        (middle_mcp[2] - wrist[2]) ** 2
+                    );
+    
+                    const index_mcp = handData[0][5];
+                    const pinky_mcp = handData[0][17];
+    
+                    const refLine2Length = Math.sqrt(
+                        (index_mcp[0] - pinky_mcp[0]) ** 2 +
+                        (index_mcp[1] - pinky_mcp[1]) ** 2 +
+                        (index_mcp[2] - pinky_mcp[2]) ** 2
+                    );
+    
+                    if (refLine1Length < 0.25 && refLine2Length < 0.10){
+                        setwithinDistance(false)
+                    } else {
+                        setwithinDistance(true)
+                    }
+                } else if (results.multiHandLandmarks && results.multiHandLandmarks.length === 0){
+                    setNotDetectingHands(true);
+                }
+    
+                ctx.restore();
+            });
+    
+            async function startCamera() {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 1280, height: 720 },
+                });
+                videoElement.srcObject = stream;
+    
+                const camera = new Camera(videoElement, {
+                    onFrame: async () => {
+                        await hands.send({ image: videoElement });
+                    },
+                    width: 1280,
+                    height: 720,
+                });
+    
+                camera.start();
+            }
+    
+            startCamera();
+    
+            return () => {
+                hands.close();
+                videoElement?.srcObject?.getTracks().forEach(track => track.stop());
+            };
+        }
+    }, [gameRunning, matches]);
+    
+
+    
+
+    // useEffect function for handling notification displaying 
+    useEffect(() => {
+        const notificationBox = notificationRef.current
+        const canvas = document.querySelector('.canvas')
+        const videoElement = document.querySelector('#videoElement')
+
+        notificationBox.style.display = 'none'
+        canvas.style.filter = 'none';
+        videoElement.style.filter = 'none';
+
+        // If the hands are not detecting
+        if (gameRunning === true && notDetectingHands === true) {
+            notificationBox.style.display = "block"
+            notificationBox.style.backgroundColor = "hsl(0, 0%, 100%);"
+            notificationBox.innerHTML = "⚠️ Can't detect any hands in the frame"
+            canvas.style.filter = "blur(5px)";
+            videoElement.style.filter = "blur(5px)";
+        }
+        
+        // If the hands are not in the distance
+        else if (gameRunning ==true && withinDistance === false){
+            notificationBox.style.display = "block"
+            notificationBox.style.backgroundColor = "hsl(0, 0%, 100%);"
+            notificationBox.innerHTML = "⚠️ Please move hands closer to the camera"
+            canvas.style.filter = "blur(5px)";
+            videoElement.style.filter = "blur(5px)";
+        }
+
+        // If the completed
+        else if (!gameRunning && successNotficationNeeded === true){
+            let countdown = 5;
+            notificationBox.style.display = "block";
+            notificationBox.style.backgroundColor = "hsl(148, 100%, 84%)";
+            canvas.style.filter = "blur(5px)";
+            videoElement.style.filter = "blur(5px)";
+
+            const timer = setInterval(() => {
+                notificationBox.innerHTML = `✅ Well done! The sign matches <br> This message will close in ${countdown}`;
+
+                if (countdown-- === 0) {
+                    clearInterval(timer);
+                    notificationBox.style.display = "none";
+                    canvas.style.filter = "none";
+                    videoElement.style.filter = "none";
+                    initialMoment()
+                }
+            }, 1000);
+        }
+
+        // If couldn't complete
+        else if (!gameRunning && timesupNotificationNeeded === true){
+            let countdown = 5;
+            notificationBox.style.display = "block";
+            notificationBox.style.backgroundColor = "hsl(0, 100%, 88%)";
+            canvas.style.filter = "blur(5px)";
+            videoElement.style.filter = "blur(5px)";
+
+            const timer = setInterval(() => {
+                notificationBox.innerHTML = `⌛ Time's up, better luck next time <br> This message will close in ${countdown}`;
+
+                if (countdown-- === 0) {
+                    clearInterval(timer);
+                    notificationBox.style.display = "none";
+                    canvas.style.filter = "none";
+                    videoElement.style.filter = "none";
+                    initialMoment()
+                }
+            }, 1000);
+        }
+
+    }, [gameRunning, notDetectingHands, withinDistance, successNotficationNeeded, timesupNotificationNeeded]);
+
+    
+        // Listens to match_detected variable in backend
+        useEffect(() => {
+            socket.on("match_status", (data) => {
+                setMatches(data);  // Update the state based on the received value
+                console.log("Matches:", {matches})
+            });
+    
+            return () => socket.off("match_status");
+        }, []);
+
+
+
+    
+    
+    
     return (<>
         {/*Conditionally hide the welcome-screen based on initialPage */}
         <div className={`welcome-screen ${!initialPage ? 'hidden' : ''}`}>
@@ -455,17 +658,16 @@ function App() {
         <div className='sign-related-container'>
             <div className='canvas-wrapper'>
                 <video
-                    ref={videoRef}
                     id="videoElement"
                     style={{ display: "block", width: "768px", height: "432px", 
-                        position:"absolute"}}
+                        position:"absolute", transform: "scaleX(-1)", zIndex: "2"}}
                     width="768"
                     height="432"
                     autoPlay
                 ></video>
-                <Canvas/>
-                <Timer/>
-                <Notification/>
+                <canvas className='canvas' width="1280" height="720"></canvas>
+                <div className="timer" >You have:</div>
+                <Notification ref={notificationRef}/>
                 <StartNote letter={selectedLetter} handleGameStartClick={handleGameStartClick}/>
                 <StartCountdown countdownTime={countdownTime}/>
             </div>

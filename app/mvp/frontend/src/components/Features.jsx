@@ -3,7 +3,6 @@ const Features = () => {
       { text: "AI-Powered Sign Recognition" },
       { text: "Real-Time Feedback" },
       { text: "Interactive Learning" },
-      { text: "Games & Videos" },
       { text: "Progress Tracking" },
     ];
   

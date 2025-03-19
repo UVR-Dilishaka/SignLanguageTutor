@@ -28,15 +28,14 @@ def create_app(config):
     migrate = Migrate(app, db)
     JWTManager(app)
     api = Api(app,doc='/docs')
+    
     CORS(app)
 
     api.add_namespace(auth_ns)
     api.add_namespace(data_ns) 
     api.add_namespace(Tamil_predict_ns) 
-    api.add_namespace(adoptiveTutoring_ns)
-
-     
-
+    
+    
     @app.shell_context_processor
     def make_shell_context():
         return {'db': db, 'User': User, 'Sign': Sign, 'Activity': Activity, 'PerformanceHistory': PerformanceHistory, 'StudentSignMastery': StudentSignMastery}

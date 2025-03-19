@@ -2,7 +2,7 @@ import React from "react";
 
 function CheckboxInput({ name, checked, onChange, label }) {
   return (
-    <div className="mb-3">
+    <div className="checkbox-input">
       <input type="checkbox" name={name} checked={checked} onChange={onChange} />
       <label className="form-label"> {label}</label>
     </div>

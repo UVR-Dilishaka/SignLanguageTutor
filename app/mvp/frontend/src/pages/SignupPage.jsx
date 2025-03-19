@@ -3,6 +3,7 @@ import FormInput from "../components/FormInput";
 import CheckboxInput from "../components/CheckboxInput";
 import { Link } from "react-router-dom";
 import "../App.css";
+import Header from "../components/Header";
 
 function Signuppage() {
   const [formData, setFormData] = useState({
@@ -83,9 +84,11 @@ function Signuppage() {
   };
 
   return (
+    <>
+    <Header />
     <div className="container">
       <div className="form-container text-center">
-        <h2>Sign Up</h2>
+        <h2 className="auth-form-title" >Sign Up</h2>
         <form className="auth-form" onSubmit={handleSubmit}>
           <FormInput
             label="Username"
@@ -139,6 +142,7 @@ function Signuppage() {
         <p>Already have an account? <Link to="/login"> Login </Link></p>
       </div>
     </div>
+    </>
   );
 }
 
