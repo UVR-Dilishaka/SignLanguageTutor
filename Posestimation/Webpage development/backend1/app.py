@@ -29,7 +29,7 @@ selected_letter = ""
 allowed_time = 20
 match_detected = False
 
-model_path = "D:/Yr2/DSGP/Virtual Environment/DSGP/web_testing/backend1/RF.pkl"
+model_path = "/home/ruwantha/Repos/sign-project/SignLanguageTutor/Posestimation/Webpage development/backend1/RF.pkl"
 with open(model_path, 'rb') as f:
     model = pickle.load(f)
 
@@ -185,5 +185,5 @@ def angle_listing(landmarks):
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, host="0.0.0.0")
+    socketio.run(app, debug=True, host="127.0.0.1", port=5000)
 
