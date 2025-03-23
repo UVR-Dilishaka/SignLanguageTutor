@@ -24,6 +24,7 @@ import axios from "axios";
 // Importing MediaPipe hands package
 import * as handsModule from "@mediapipe/hands";
 import { Camera } from "@mediapipe/camera_utils";
+import LetterImage from './LetterImage.jsx';
 
 // Connecting to the backend WebSocket server
 const socket = io("http://127.0.0.1:5000");
@@ -48,14 +49,15 @@ function App() {
     const [currentLevel, setCurrentLevel] = useState(1);
     const [currentLetters, setCurrentLetters] = useState([]);
     const [unlockedLevels, setUnlockedLevels] = useState([1,2,4])
-    const [completedLetters, setCompletedLetters] = useState(["A"]);
+    const [completedLetters, setCompletedLetters] = useState([]);
     const [selectedLetter, setSelectedLetter] = useState('')
     const [score, setScore] = useState(0)
     const [countdownTime, setCountdownTime] = useState(5);
-    let allLetters = ['A','B','C','D','E',"F","G","H","I",'J','K','L','M','N','O']
+    const [allLetters, setAllLetters] = useState([]);
+    const [letterWords, setLetterWords] = useState([]);
     const [hintUsage, setHintUsage] = useState([]);
-    const [gameRunning, setgameRunning] = useState(false);
-    
+    const [letterWordImages, setLetterWordImages] = useState([]);
+    const hintImages = []
     
     // State variables for running game
     const notificationRef = useRef(null);
@@ -65,7 +67,10 @@ function App() {
     const [timeLeft, setTimeLeft] = useState(20000);
     const [successNotficationNeeded, setSuccessNotificationNeeded] = useState(false)
     const [timesupNotificationNeeded, setTimesupNotificationNeeded] = useState(false)
-    
+    const [gameRunning, setgameRunning] = useState(false);
+    const [gameStarted, setGameStarted] = useState(false);
+    const [isMediapipeLoaded, setIsMediapipeLoaded] = useState(false);
+
 
     const handleStartClick = () => {
         setInitialPage(false);  // Hide the welcome-screen when start button is clicked
@@ -91,26 +96,26 @@ function App() {
     }, [unlockedLevels]);
 
     // Handles level selecting in the welcome screen
-    const handleLevelClick = (level) => {
-        if (unlockedLevels.includes(level)) {
-            setCurrentLevel(level); 
+    // const handleLevelClick = (level) => {
+    //     if (unlockedLevels.includes(level)) {
+    //         setCurrentLevel(level); 
     
-            // Update the inner HTML of level-container1 p
-            const levelText = document.querySelector(".level-container1 p");
-            if (levelText) {
-                levelText.innerHTML = `Selected Level: ${level}`;
-            }
+    //         // Update the inner HTML of level-container1 p
+    //         const levelText = document.querySelector(".level-container1 p");
+    //         if (levelText) {
+    //             levelText.innerHTML = `Selected Level: ${level}`;
+    //         }
     
-            // Remove zoom effect from all level boxes
-            document.querySelectorAll(".level-select").forEach((box) => {
-                box.classList.remove("selected-level");
-            });
+    //         // Remove zoom effect from all level boxes
+    //         document.querySelectorAll(".level-select").forEach((box) => {
+    //             box.classList.remove("selected-level");
+    //         });
     
-            // Apply zoom effect to the clicked level box
-            document.getElementById(`lvl${level}`).classList.add("selected-level");
-            // document.querySelector("")
-        }
-    };
+    //         // Apply zoom effect to the clicked level box
+    //         document.getElementById(`lvl${level}`).classList.add("selected-level");
+    //         // document.querySelector("")
+    //     }
+    // };
 
     // For marking completed, uncompleted and selected letters in the letter display
     const letterStatusDisplay = () => {
@@ -151,10 +156,14 @@ function App() {
         countdown.style.display = "none"
         canvas.style.display = "none"
         videoElement.style.display = "none"
+        notificationRef.current.style.backgroundColor = "hsl(0, 0%, 100%)"
         setgameRunning(false);
+        setGameStarted(false);
+        console.log('gameRunning:', {gameRunning})
         setMatches(false);
         setSuccessNotificationNeeded(false);
         setTimesupNotificationNeeded(false);
+        setIsMediapipeLoaded(false);
 
     }
 
@@ -184,27 +193,41 @@ function App() {
 
     const startGameTimer = () => {
         if (gameTimerRef.current) {
-            clearInterval(gameTimerRef.current);     // This line ensures no old intervals are running
+            clearInterval(gameTimerRef.current); // Ensure no old intervals are running
         }
     
-        setgameRunning(true); 
-        setTimeLeft(20000);     // Reset the timer when game starts
+        setgameRunning(true);
+        setTimeLeft(20000); // Reset the timer when the game starts
     
         gameTimerRef.current = setInterval(() => {
             setTimeLeft((prevTime) => {
-                
+                if (!isMediapipeLoaded) {
+                    return prevTime; // Pause time decrementing until Mediapipe is loaded
+                }
                 if (prevTime <= 0) {
                     setwithinDistance(true);
                     setNotDetectingHands(false);
                     setgameRunning(false);
                     console.log("Timer finished. No match detected.");
-                    setTimesupNotificationNeeded(true)
+                    setTimesupNotificationNeeded(true);
+                    clearInterval(gameTimerRef.current); // Stop the timer
                     return 0;
                 }
+    
                 return prevTime - 50;
             });
         }, 50);
     };
+    
+    // New useEffect to restart the timer when Mediapipe is loaded
+    useEffect(() => {
+        if (isMediapipeLoaded && gameRunning) {
+            console.log("Mediapipe loaded, resuming timer...");
+            startGameTimer(); // Restart the timer when Mediapipe is loaded
+        }
+    }, [isMediapipeLoaded]);
+    
+    
 
     //Stops the timer and send time if match is detected
         useEffect(() => {
@@ -230,8 +253,9 @@ function App() {
     
     // Handle game start click
     const handleGameStartClick = () => {
+        setGameStarted(true);
         setMatches(false);
-        setCountdownTime(5);
+        setCountdownTime(3);
         const startNote = document.querySelector(".start-note");
         const countdown = document.querySelector(".start-countdown");
     
@@ -256,7 +280,8 @@ function App() {
     // Display updated time in timer component
     useEffect(() => {
         if (timeLeft > 0) {
-            document.querySelector(".timer").innerHTML = `You have: ${Math.floor(timeLeft / 1000)}`;
+            // document.querySelector('.timer').style.display = 'block';
+            document.querySelector(".timer").innerHTML = `You have: ${Math.floor(timeLeft/1000)}`;
             console.log('Time left:', {timeLeft})
         }
     }, [timeLeft]); // Update UI whenever timeLeft changes
@@ -321,10 +346,38 @@ function App() {
         }
     }, [selectedLetter]);
 
+    // Updating completedLetter state variable
+    useEffect(() => {
+        // Listen for the "update_completed_letters" event
+        socket.on('update_completed_letters', (letters) => {
+          setCompletedLetters(letters);
+          console.log('Completed letters updated:', letters);
+        });
+    
+        // Cleanup when component unmounts
+        return () => {
+          socket.off('update_completed_letters');
+        };
+      }, []);
+
+    // Listen for level updates from Flask
+    useEffect(() => {
+        socket.on('completed_letters', (data) => {
+            setCompletedLetters(data)
+        });
+
+        return () => {
+            socket.off('level_updated');
+        };
+    }, []);  
+
+    
+
     //Handling next letter button click
     const handleNextLetterButtonClick = () => {
         const nextLetter = currentLetters[currentLetters.indexOf(selectedLetter) + 1]
         setSelectedLetter(nextLetter)
+        setgameRunning(false)
         initialMoment()
     }
 
@@ -429,23 +482,21 @@ function App() {
     }, [selectedLetter]);
 
     
-
-
     // useEffect function for detecting landmarks and sending them via websockets
     useEffect(() => {
         if (gameRunning === true && matches === false) {
             socket.emit("hand_landmarks", { hands: [] });
-
+    
             const videoElement = document.getElementById("videoElement");
             const canvasElement = document.querySelector(".canvas");
             const ctx = canvasElement.getContext("2d");
-            const timer = document.querySelector(".timer")
-
-            videoElement.style.display = 'block'
-            canvasElement.style.display = 'block'
-            timer.style.display = 'block'
+            const timer = document.querySelector(".timer");
     
-            const hands = new Hands({
+            videoElement.style.display = 'block';
+            canvasElement.style.display = 'block';
+            timer.style.display = 'block';
+    
+            let hands = new Hands({
                 locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
             });
     
@@ -456,15 +507,20 @@ function App() {
                 minTrackingConfidence: 0.7,
             });
     
-            hands.onResults((results) => {
-                ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+            let isProcessing = false; // Prevents `send` from running if `hands` is closing
     
+            hands.onResults((results) => {
+                if (!isMediapipeLoaded) {
+                    setIsMediapipeLoaded(true);
+                }
+    
+                ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
                 ctx.save();
                 ctx.translate(canvasElement.width, 0);
                 ctx.scale(-1, 1);
     
                 if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-                    setNotDetectingHands(false)
+                    setNotDetectingHands(false);
                     results.multiHandLandmarks.forEach((landmarks) => {
                         landmarks.forEach((lm) => {
                             const x = lm.x * canvasElement.width;
@@ -477,15 +533,14 @@ function App() {
                         });
                     });
     
-                    const handData = results.multiHandLandmarks.map(hand => 
+                    const handData = results.multiHandLandmarks.map(hand =>
                         hand.map(lm => [lm.x, lm.y, lm.z])
                     );
     
                     socket.emit("hand_landmarks", { hands: handData });
     
-    
                     // Calculate reference line lengths
-                    const wrist = handData[0][0]; // Corrected indexing
+                    const wrist = handData[0][0];
                     const middle_mcp = handData[0][9];
     
                     const refLine1Length = Math.sqrt(
@@ -503,12 +558,8 @@ function App() {
                         (index_mcp[2] - pinky_mcp[2]) ** 2
                     );
     
-                    if (refLine1Length < 0.25 && refLine2Length < 0.10){
-                        setwithinDistance(false)
-                    } else {
-                        setwithinDistance(true)
-                    }
-                } else if (results.multiHandLandmarks && results.multiHandLandmarks.length === 0){
+                    setwithinDistance(!(refLine1Length < 0.25 && refLine2Length < 0.10));
+                } else {
                     setNotDetectingHands(true);
                 }
     
@@ -523,7 +574,15 @@ function App() {
     
                 const camera = new Camera(videoElement, {
                     onFrame: async () => {
-                        await hands.send({ image: videoElement });
+                        if (!isProcessing) {
+                            isProcessing = true;
+                            try {
+                                await hands.send({ image: videoElement });
+                            } catch (error) {
+                                console.error("Error sending frame to MediaPipe Hands:", error);
+                            }
+                            isProcessing = false;
+                        }
                     },
                     width: 1280,
                     height: 720,
@@ -535,14 +594,20 @@ function App() {
             startCamera();
     
             return () => {
-                hands.close();
+                isProcessing = true; // Prevent `send()` from running during cleanup
+                hands.onResults(() => {}); // Remove the callback
+                hands.close().then(() => {
+                    hands = null;
+                }).catch(error => {
+                    console.error("Error closing hands:", error);
+                });
+    
                 videoElement?.srcObject?.getTracks().forEach(track => track.stop());
             };
         }
     }, [gameRunning, matches]);
-    
 
-    
+
 
     // useEffect function for handling notification displaying 
     useEffect(() => {
@@ -557,7 +622,7 @@ function App() {
         // If the hands are not detecting
         if (gameRunning === true && notDetectingHands === true) {
             notificationBox.style.display = "block"
-            notificationBox.style.backgroundColor = "hsl(0, 0%, 100%);"
+            notificationBox.style.backgroundColor = "hsl(0, 0%, 100%)"
             notificationBox.innerHTML = "⚠️ Can't detect any hands in the frame"
             canvas.style.filter = "blur(5px)";
             videoElement.style.filter = "blur(5px)";
@@ -566,7 +631,7 @@ function App() {
         // If the hands are not in the distance
         else if (gameRunning ==true && withinDistance === false){
             notificationBox.style.display = "block"
-            notificationBox.style.backgroundColor = "hsl(0, 0%, 100%);"
+            notificationBox.style.backgroundColor = "hsl(0, 0%, 100%)"
             notificationBox.innerHTML = "⚠️ Please move hands closer to the camera"
             canvas.style.filter = "blur(5px)";
             videoElement.style.filter = "blur(5px)";
@@ -616,21 +681,40 @@ function App() {
 
     }, [gameRunning, notDetectingHands, withinDistance, successNotficationNeeded, timesupNotificationNeeded]);
 
-    
-        // Listens to match_detected variable in backend
-        useEffect(() => {
-            socket.on("match_status", (data) => {
-                setMatches(data);  // Update the state based on the received value
-                console.log("Matches:", {matches})
-            });
-    
-            return () => socket.off("match_status");
-        }, []);
+
+    // Listens to match_detected variable in backend
+    useEffect(() => {
+        socket.on("match_status", (data) => {
+            setMatches(data);  // Update the state based on the received value
+            console.log("Matches:", {matches})
+        });
+
+        return () => socket.off("match_status");
+    }, []);
 
 
+    useEffect(() => {
+        const video = document.querySelector(".videoElement");
+        if (video?.srcObject) {
+            const isOn = video.srcObject.getVideoTracks().some(track => track.readyState === "live");
+            console.log("Webcam is", isOn ? "ON" : "OFF");
+        }
+    }, []);
+
 
     
-    
+    // Initially receive allLetters, LetterWords and letterWordImages 
+    useEffect(() => {
+        fetch("http://127.0.0.1:5000/api/initial-data")
+            .then((response) => response.json())
+            .then((data) => {
+                setAllLetters(data.allLetters);
+                setLetterWords(data.letterWords);
+                setLetterWordImages(data.letterWordImages)
+            })
+            .catch((error) => console.error("Error fetching data:", error));
+    }, []);
+
     
     return (<>
         {/*Conditionally hide the welcome-screen based on initialPage */}
@@ -638,7 +722,7 @@ function App() {
                 <BlurOverlay />
                 <div>
                     <Greeting username={username} />
-                    <LevelSelection handleLevelClick={handleLevelClick}/>
+                    <LevelSelection currentLevel={currentLevel}/>
                     <HomeButton1 onClick={goToHome}/>
                     <StartButton onClick={handleStartClick} />
                 </div>
@@ -652,6 +736,7 @@ function App() {
                 completedLetters={completedLetters} 
                 selectedLetter={selectedLetter} 
                 handleLetterClick={handleLetterClick}
+                gameStarted={gameStarted}
             />
             <Score score={score}/>
         </div>
@@ -672,8 +757,8 @@ function App() {
                 <StartCountdown countdownTime={countdownTime}/>
             </div>
             
-            <Hint handleHintButtonClick={handleHintButtonClick}/>
-            <LetterSwitch handleNextLetterButtonClick={handleNextLetterButtonClick} handlePreviousLetterButtonClick={handlePreviousLetterButtonClick}/>
+            <Hint handleHintButtonClick={handleHintButtonClick} selectedLetter={selectedLetter} allLetters={allLetters} hintImages={hintImages} />
+            <LetterImage selectedLetter={selectedLetter} allLetters={allLetters} letterWords={letterWords} letterWordImages={letterWordImages}/>
         </div>
         <HomeButton onClick={goToHome}/>
     </>);
