@@ -30,8 +30,8 @@ function App() {
           <Route path="/profile/*" element={<ProfilePage />}>
             <Route index element={<ProfileContent />} /> {/* Set ProfileContent as the default route */}
             <Route path="report" element={<ReportPage />} />
-            <Route path="play" element={<PlayPage />} />
           </Route>
+          <Route path="play" element={<PlayPage />} />
           <Route path="/testpage" element={<Test />} />
       </Routes>
       

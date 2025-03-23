@@ -373,7 +373,7 @@ body {
   margin-bottom: 10px;
   border: none;
   border-radius: 8px;
-  background-color: var(--secondary-color);
+  background-color: var(--button-color);
   color: white;
   font-weight: bold;
   cursor: pointer;
@@ -382,7 +382,7 @@ body {
 
 
 .sidebar button:hover {
-  background-color: var(--secondary-hover);
+  background-color: var(--button-hover);
 }
 
 .sidebar button.active {
@@ -433,6 +433,7 @@ body {
   font-weight: bold;
   box-shadow: 0 6px 12px var(--shadow-color);
 }
+
 
 .profile-content {
   display: flex;
@@ -515,3 +516,14 @@ body {
 
 
 
+
+.play-header {
+  width: 100%;
+  padding: 20px;
+  background-color: var(--header-title);
+  color: white;
+  text-align: center;
+  font-size: 36px;
+  font-weight: bold;
+  box-shadow: 0 6px 12px var(--shadow-color);
+}

@@ -9,7 +9,7 @@ const ProfilePage = () => {
   const [userData, setUserData] = useState({});
   const [masteryData, setMasteryData] = useState([]);
   const [signs, setSigns] = useState([]);
-  const [selectedLanguage, setSelectedLanguage] = useState("Sinhala"); // Default to Sinhala
+  const [selectedLanguage, setSelectedLanguage] = useState("Sinhala"); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const ProfilePage = () => {
         <div className="sidebar">
           <nav className="profile-menu">
             <Link to="/profile" className="menu-item">Profile</Link>
-            <Link to="/profile/play" className="menu-item">Play</Link>
+            <Link to="/play" className="menu-item">Play</Link>
           </nav>
         </div>
 
