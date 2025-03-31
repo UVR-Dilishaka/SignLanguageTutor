@@ -1,29 +1,42 @@
-from flask import request
+from flask import request, jsonify
 from flask_restx import Namespace, Resource
 import numpy as np
 import json
-from ext import socketio
+from ext import SLmodel, TLmodel  # Ensure TLmodel and SLmodel are trained
 
 poseEstimation_ns = Namespace('poseEstimation', description='API for pose estimation')
-
 
 @poseEstimation_ns.route("/hand_landmarks")
 class HandLandmarks(Resource):
     def post(self):
         data = request.json
+        language = data.get("language")
+        print(language)  
+
+        if language not in ["Sinhala", "Tamil"]:
+            return {"error": "Invalid or missing language parameter. Use 'sinhala' or 'tamil'."}, 400
+
         landmarks_array = json_to_numpy(data)
         if landmarks_array is None:
             return {"error": "Invalid hand landmark data"}, 400
         
-        
-        
+        # Compute angles
         angles = angle_listing(landmarks_array[0])
-        print(angles)
-        return 200
+        
+        # Prepare feature array for prediction
+        features = np.array(angles).reshape(1, -1)
+        print("Extracted Features: ", features)
+        
+        # Select the appropriate model based on language
+        model = TLmodel if language == "Tamil" else SLmodel
+        
+        # Make prediction
+        prediction = model.predict(features)
+        print("Prediction: ", prediction)
 
+        return jsonify({'prediction': int(prediction[0])})
 
-
-
+# Utility function to convert JSON to NumPy
 def json_to_numpy(data):
     if "hands" in data and isinstance(data["hands"], list) and len(data["hands"]) > 0:
         hands_array = np.array(data["hands"], dtype=np.float32)
@@ -31,7 +44,7 @@ def json_to_numpy(data):
             return hands_array
     return None 
 
-
+# Function to compute angles in bulk
 def calculate_angle_bulk(landmarks, point_indices):
     p1 = landmarks[[i[0] for i in point_indices]]
     p2 = landmarks[[i[1] for i in point_indices]]
@@ -49,7 +62,7 @@ def calculate_angle_bulk(landmarks, point_indices):
     angles_deg = np.rad2deg(angles_rad)
     return angles_deg
 
-
+# Extract relevant angles
 def angle_listing(landmarks):
     point_indices = [
         (1, 2, 3), (0, 5, 6), (0, 9, 10), (0, 13, 14), (0, 17, 18),

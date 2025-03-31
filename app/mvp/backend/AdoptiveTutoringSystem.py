@@ -27,14 +27,15 @@ def selectSigns(student_id, language):
     sign_ids = [record.sign_id for record in mastery_records]
     mastery_levels = np.array([float(record.current_mastery_level) for record in mastery_records])
 
-    epsilon = 0.1
-    if random.random() < epsilon:
-        selected_signs = random.sample(sign_ids, min(4, len(sign_ids)))  # Avoid out-of-range errors
+    # epsilon = 0.1
+    # if random.random() < epsilon:
+    #     selected_signs = random.sample(sign_ids, min(4, len(sign_ids)))  # Avoid out-of-range errors
 
-    else:
-        selected_indices = np.argsort(mastery_levels)[:4]
-        selected_signs = [sign_ids[i] for i in selected_indices]
+    # else:
+    #     selected_indices = np.argsort(mastery_levels)[:4]
+    #     selected_signs = [sign_ids[i] for i in selected_indices]
 
+    selected_signs = random.sample(sign_ids, min(4, len(sign_ids)))
     return selected_signs
 
 

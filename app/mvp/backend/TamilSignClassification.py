@@ -2,13 +2,13 @@ from flask import request, jsonify
 from flask_restx import Namespace, Resource
 import pickle
 import numpy as np
+from ext import TLmodel
 
 
 Tamil_predict_ns = Namespace('tamilSignPredict', description='Prediction endpoint for Tamil Sign Language Classification')
 
 
-with open('./Model/RF.pkl', 'rb') as file:
-    model = pickle.load(file)
+
 
 @Tamil_predict_ns.route('/')
 class Predict(Resource):
@@ -35,7 +35,9 @@ class Predict(Resource):
             data['Right_THUMB_INDEX_Abduction_angle']
         ]).reshape(1, -1)
 
+        print(features)
+
         
-        prediction = model.predict(features)
+        prediction = TLmodel.predict(features)
 
         return jsonify({'prediction': int(prediction[0])})

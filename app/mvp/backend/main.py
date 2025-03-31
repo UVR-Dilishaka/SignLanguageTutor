@@ -15,6 +15,7 @@ from data import data_ns
 from TamilSignClassification import Tamil_predict_ns
 from AdoptiveTutoringSystem import adoptiveTutoring_ns
 from PoseEstimation import poseEstimation_ns
+from SinhalaSignClassification import Sinhala_predict_ns
 
 
 
@@ -42,7 +43,8 @@ def create_app(config):
     api.add_namespace(data_ns) 
     api.add_namespace(Tamil_predict_ns) 
     api.add_namespace(poseEstimation_ns)
-    api.add_namespace(adoptiveTutoring_ns)  
+    api.add_namespace(adoptiveTutoring_ns)
+    api.add_namespace(Sinhala_predict_ns)  
     
     
     @app.shell_context_processor
