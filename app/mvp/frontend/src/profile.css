@@ -1,83 +1,131 @@
-/* Profile Page Styling */
 
-:root {
-    --background-color: #EAFFC1; /* Light green background */
-    --header-bg: #88AB8E; /* Header background */
-    --text-color: #333; /* General text color */
-    --accent-color: #517664; /* Accent color for highlights */
-    --sidebar-bg: #B2C8BA; /* Sidebar background */
-    --hover-bg: #A5C9A6; /* Hover effect */
-    --card-bg: #FFFFFF; /* Card background */
-    --border-radius: 10px;
-    --shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
 
-body {
-    background-color: var(--background-color);
-    font-family: 'Arial', sans-serif;
-    color: var(--text-color);
+/* Header */
+.profile-header, .play-header {
+    width: 100%;
+    padding: 20px;
+    background-color: var(--header-title);
+    color: white;
+    text-align: center;
+    font-size: 36px;
+    font-weight: bold;
+    box-shadow: 0 6px 12px var(--shadow-color);
 }
 
 .profile-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .profile-content {
+    display: flex;
+    flex: 1;
     gap: 20px;
     padding: 20px;
-    max-width: 1200px;
-    margin: auto;
-}
-
-.profile-sidebar {
-    background-color: var(--sidebar-bg);
-    padding: 20px;
-    width: 250px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
+  }
+  
+  .profile-left {
+    flex: 1; /* Takes less space */
+    max-width: 200px; /* Limit width */
+  }
+  
+  .profile-right {
+    flex: 5; /* Takes more space */
     display: flex;
-    flex-direction: column;
-}
-
-.profile-sidebar a {
-    text-decoration: none;
-    color: var(--text-color);
-    padding: 10px;
-    border-radius: var(--border-radius);
-    margin: 5px 0;
-    transition: background 0.3s;
-}
-
-.profile-sidebar a:hover {
-    background-color: var(--hover-bg);
-}
-
-.profile-content {
-    flex-grow: 1;
-    background-color: var(--card-bg);
-    padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-}
-
-.profile-header {
-    background-color: var(--header-bg);
-    color: white;
-    padding: 15px;
-    border-radius: var(--border-radius) var(--border-radius) 0 0;
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-align: center;
-}
-
-.profile-info {
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .profile-menu {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding: 15px;
+  }
+  
+  .menu-item {
+    text-decoration: none;
+    color: #333;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: var(--button-color);
+    transition: background 0.3s ease-in-out;
+  }
+  
+  .menu-item:hover {
+    background-color: var(--button-hover);
+  }
+  
+  .profile-switchcard {
+    width: 100%;
+    max-width: 800px;
+
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+
+
+  /* Profile Report Container */
+.profile-report {
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 800px;
+    /* box-shadow: 0 4px 10px var(--shadow-color); */
 }
 
-.profile-info div {
-    background-color: var(--background-color);
-    padding: 10px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
+/* User Details */
+.userdetails {
+    
+    padding: 15px;
+    border-radius: 8px;
+    /* box-shadow: 0 2px 6px var(--shadow-color); */
 }
+
+/* Language Switching Buttons */
+.switch-buttons {
+    display: flex;
+    justify-content: center;
+
+}
+
+.switch-buttons button {
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: var(--button-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.switch-buttons button.active {
+    background-color: var(--button-hover);
+}
+
+.switch-buttons button:hover {
+    background-color: var(--button-hover);
+}
+
+/* Graph Section */
+.Grapgh-section {
+    overflow-x: auto; /* Enables horizontal scrolling */
+    max-width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+   
+    box-shadow: 0 2px 6px var(--shadow-color);
+}
+
+.masterry-graph {
+    min-width: 600px; /* Ensures content inside is scrollable if needed */
+    height: 300px;
+}
+
+  
+
+  

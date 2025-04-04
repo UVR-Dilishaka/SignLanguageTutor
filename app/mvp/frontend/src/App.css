@@ -373,7 +373,7 @@ body {
   margin-bottom: 10px;
   border: none;
   border-radius: 8px;
-  background-color: var(--secondary-color);
+  background-color: var(--button-color);
   color: white;
   font-weight: bold;
   cursor: pointer;
@@ -382,7 +382,7 @@ body {
 
 
 .sidebar button:hover {
-  background-color: var(--secondary-hover);
+  background-color: var(--button-hover);
 }
 
 .sidebar button.active {
@@ -408,109 +408,6 @@ body {
 
 .chart-container {
   height: 300px;
-}
-
-
-/* profile page */
-
-
-/* Profile Page Layout */
-.profile-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  min-width:  100vh;
-}
-
-.profile-header {
-  width: 100%;
-  padding: 20px;
-  background-color: var(--header-title);
-  color: white;
-  text-align: center;
-  font-size: 36px;
-  font-weight: bold;
-  box-shadow: 0 6px 12px var(--shadow-color);
-}
-
-.profile-content {
-  display: flex;
-  width: 100%;
-  max-width: 1200px;
-  padding: 5px;
-  justify-content: space-between;
-  gap: 20px;
-  flex-grow: 1;
-}
-
-.sidebar {
-  width: 15%;
-  background-color: var(--sub-container-bg);
-  padding: 5px;
-  border-radius: 10px;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
-.sidebar .profile-menu {
-  list-style: none;
-  padding: 10pt;
-}
-
-.sidebar .menu-item {
-  display: block;
-  width: 100%;
-  padding: 10px 5px;
-  margin-bottom: 10px;
-  background-color: var(--button-color);
-  color: white;
-  font-weight: bold;
-  text-align: center;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: background 0.3s;
-}
-
-.sidebar .menu-item:hover {
-  background-color: var(--button-hover);
-  color: var(--text-color);
-}
-
-.profile-main {
-  width: 85%;
-  padding: 2px;
-  background-color: var(--sub-container-bg);
-  border-radius: 5px;
-  
-}
-
-
-.profile-card h2 {
-  color: var(--primary-color);
-  margin-bottom: 20px;
-}
-
-.profile-card p {
-  color: var(--text-color);
-  line-height: 1.6;
-}
-
-/* Add smooth transition when switching between sections */
-.profile-main, .sidebar {
-  transition: all 0.3s ease;
-}
-
-
-.profile-main {
-  width: 85%;
-  padding: 20px; /* Increased padding for better spacing */
-  background-color: var(--sub-container-bg);
-  border-radius: 5px;
-  text-align: left; /* Ensures all text inside is left-aligned */
-  display: flex;
-  flex-direction: column; /* Aligns child elements in a column */
-  align-items: flex-start; /* Ensures left alignment */
 }
 
 

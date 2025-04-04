@@ -20,7 +20,7 @@ level_data = {
     3: ['K','L','M','N','O']
 }
 all_letters = ['A','B','C','D','E',"F","G","H","I",'J','K','L','M','N','O']
-completed_letters = []
+completed_letters = {'A'}
 hint_usage = [True,False,True,False,False,
               False,False,False,False,False,
               False,False,False,False,False]
@@ -114,8 +114,11 @@ def predict_letter(angles):
 
     if predicted_letter == all_letters.index(selected_letter)+1:
         match_detected = True
+        completed_letters.add(selected_letter)
         print(f"Match detected: {predicted_letter}")
+        print(completed_letters)
         socketio.emit("match_status", match_detected)
+        socketio.emit("completed_letters", list(completed_letters))
         # Do score changing and other stuff here
 
 # Function to receive detected time
@@ -181,7 +184,14 @@ def angle_listing(landmarks):
     angle_list = calculate_angle_bulk(landmarks, point_indices)
     return angle_list
 
-# Sending the match_detected value using websockets
+# Initially and real-time send completed_letters value to the frontend
+@socketio.on("connect")
+def send_initial_completed_letters():
+    """Send completed_letters when a client connects."""
+    socketio.emit("update_completed_letters", list(completed_letters))
+    print('initial send of completed letters:', str(completed_letters))
+
+
 
 
 if __name__ == '__main__':

@@ -1,5 +1,13 @@
+import { useEffect } from "react";
 
-function Hint({handleHintButtonClick}){
+function Hint({handleHintButtonClick, selectedLetter, allLetters, hintImages}){
+    useEffect(() => {
+        const imageElement = document.querySelector(".hint-image");
+        const selectedLetterIndex = allLetters.indexOf(selectedLetter);
+
+        //imageElement.innerHTML = hintImages[selectedLetterIndex]
+    })
+
     return (<>
         <div className="hint-container">
             <div className="hint-box">

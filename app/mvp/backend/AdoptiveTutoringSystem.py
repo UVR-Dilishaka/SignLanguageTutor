@@ -1,17 +1,25 @@
 from flask import jsonify
 from flask_restx import Namespace, Resource
-from model import StudentSignMastery,PerformanceHistory
+from model import StudentSignMastery,PerformanceHistory,Sign
 import numpy as np
 import random
 import pickle
 
+from ext import db
+
 adoptiveTutoring_ns = Namespace('tutorSystem', description='API endpoints for the adaptive tutoring system')
 
-#load the rouster model as a pkl file
 
 
-def selectSigns(student_id):
-    mastery_records = StudentSignMastery.query.filter_by(student_id=student_id).all()
+
+def selectSigns(student_id, language):
+    # Join StudentSignMastery with Sign to filter by language
+    mastery_records = (
+        db.session.query(StudentSignMastery)
+        .join(Sign, StudentSignMastery.sign_id == Sign.id)
+        .filter(StudentSignMastery.student_id == student_id, Sign.language == language)
+        .all()
+    )
 
     if not mastery_records:
         return None
@@ -19,28 +27,32 @@ def selectSigns(student_id):
     sign_ids = [record.sign_id for record in mastery_records]
     mastery_levels = np.array([float(record.current_mastery_level) for record in mastery_records])
 
-    epsilon = 0.1
-    if random.random() < epsilon:
-        selected_signs = random.sample(sign_ids, 4)
+    # epsilon = 0.1
+    # if random.random() < epsilon:
+    #     selected_signs = random.sample(sign_ids, min(4, len(sign_ids)))  # Avoid out-of-range errors
 
-    else:
-        selected_indices = np.argsort(mastery_levels)[:4]
-        selected_signs = [sign_ids[i] for i in selected_indices]
+    # else:
+    #     selected_indices = np.argsort(mastery_levels)[:4]
+    #     selected_signs = [sign_ids[i] for i in selected_indices]
 
+    selected_signs = random.sample(sign_ids, min(4, len(sign_ids)))
     return selected_signs
 
-@adoptiveTutoring_ns.route('/getnextsigns/<int:student_id>')
+
+@adoptiveTutoring_ns.route('/getnextsigns/<int:student_id>/<string:language>')
 class MultiarmedBandit(Resource):
-    def get(self, student_id):
-        selected_signs = selectSigns(student_id)
+    def get(self, student_id, language):
+        selected_signs = selectSigns(student_id, language)
 
         if not selected_signs:
-            return jsonify({"error": "No mastery records found for this student"}), 404
+            return {"error": "No mastery records found for this student or language"}, 404
 
         return {
             "student_id": student_id,
+            "language": language,
             "selected_signs": selected_signs
         }, 200
+
 
 
 

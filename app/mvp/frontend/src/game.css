@@ -1,0 +1,226 @@
+.game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  .main {
+    display: flex;
+    flex: 1;
+    padding: 5px;
+  }
+  
+  .left-section, .right-section {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .left-section {
+    border-right: 2px solid #ccc;
+    position: relative;
+  }
+  
+  .video-feed {
+    display: block;
+    transform: scaleX(-1);
+    border-radius: 15px; /* Adjust this value to change roundness */
+    overflow: hidden;
+  }
+  
+  .canvas-overlay {
+    position: absolute;
+    top: 16px;
+    left: 16Px;
+  }
+  
+  .status {
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .error {
+    color: red;
+  }
+  
+  .warning {
+    color: orange;
+  }
+  
+  .success {
+    color: green;
+  }
+  
+
+  .button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: right;
+    gap: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: row; /* Align buttons in a row */
+    width: 100%; /* Make the container take full width */
+    gap: 10px; /* Add spacing between buttons */
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: var(--button-color);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    flex: 1; /* Make buttons take equal width */
+    width: 100%; /* Ensure buttons stretch fully */
+    max-width: none; /* Remove any width restrictions */
+  }
+  
+  .btn:hover {
+    background: var(--button-hover);
+  }
+  
+  .right-section {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  .dropdown {
+    width: 100%;
+    padding: 8px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: white;
+    cursor: pointer;
+  }
+  
+  .dropdown:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+
+  .letter-container {
+    display: flex;
+    flex-wrap: wrap; /* This will allow the letters to wrap to the next line if needed */
+    justify-content: center; /* Align the letters in the center */
+    margin-top: 20px; /* Add some space between the dropdown and the letters */
+    margin-bottom: 15px;;
+    gap: 10px; /* Add space between each letter */
+    width: 100%; /* Make sure the container takes full width */
+}
+
+.letter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px; /* Adjust size of each letter card */
+    height: 60px;
+    border-radius: 8px;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+}
+
+.hint-button-container{
+  margin-bottom: 15px;
+}
+
+
+
+.camerafeed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.metric-dash {
+  display: flex;
+  flex-direction: row; /* Arrange status, prediction, and timer in a row */
+  justify-content: center;
+  align-items: center;
+  gap: 20px; /* Space between elements */
+  width: 100%;
+}
+
+.status, .prediction-container, .timer {
+  flex: 1; /* Allow each section to take equal width */
+  text-align: center;
+}
+
+.prediction-container{
+  margin-top: 10px;
+  text-align: center;
+  color: var(--header-title) ;
+}
+
+.timer{
+  margin-top: 10px;
+  text-align: center;
+
+}
+
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+.popup button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.popup button:hover {
+  background: #0056b3;
+}
+
+
+.hint-img-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* Full width of the container */
+  max-height: 275px; /* Restrict max height to prevent overflow */
+  overflow: hidden; /* Prevent image from overflowing */
+  margin-top: 10px; /* Add some spacing */
+}
+
+.hint-img-container img {
+  max-width: 100%; /* Ensure the image doesn't grow too large */
+  max-height: 100%; /* Prevent image from taking too much height */
+  object-fit: contain; /* Maintain aspect ratio without cropping */
+  border-radius: 10px; /* Add rounded corners for better aesthetics */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Optional: Add a subtle shadow */
+}

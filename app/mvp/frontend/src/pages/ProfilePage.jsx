@@ -4,12 +4,13 @@ import ProfileHeader from "../components/profileHeader";
 import { fetchUserData } from "../util/fetchuser";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import Footer from "../components/Footer";
+import "../profile.css";
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState({});
   const [masteryData, setMasteryData] = useState([]);
   const [signs, setSigns] = useState([]);
-  const [selectedLanguage, setSelectedLanguage] = useState("Sinhala"); // Default to Sinhala
+  const [selectedLanguage, setSelectedLanguage] = useState("Sinhala"); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,20 +32,19 @@ const ProfilePage = () => {
     <div className="profile-container">
       <ProfileHeader username={userData.username} />
       <div className="profile-content">
-        <div className="sidebar">
+        <div className="profile-left">
           <nav className="profile-menu">
             <Link to="/profile" className="menu-item">Profile</Link>
-            <Link to="/profile/play" className="menu-item">Play</Link>
+            <Link to="/play" className="menu-item">Play</Link>
           </nav>
         </div>
 
-        <div className="profile-main">
-          <div className="profile-card">
+        <div className="profile-right">
+          <div className="profile-switchcard">
             <Outlet />
           </div>
-
-          
         </div>
+
       </div>
       <Footer />
     </div>
