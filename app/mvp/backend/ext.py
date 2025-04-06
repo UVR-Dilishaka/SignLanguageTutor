@@ -13,4 +13,5 @@ with open('./Model/RF.pkl', 'rb') as file:
 with open('./Model/RFSL.pkl', 'rb') as file:
     SLmodel = pickle.load(file)
 
-    
+with open('./Model/bkt_model.pkl', 'rb') as file:
+    bktmodel = pickle.load(file)

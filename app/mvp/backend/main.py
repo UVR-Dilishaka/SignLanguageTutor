@@ -6,8 +6,11 @@ from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 
+import pickle
+
 import atexit
 from config import Devconfig
+from ext import bktmodel
 
 
 from auth import auth_ns
@@ -22,6 +25,7 @@ from SinhalaSignClassification import Sinhala_predict_ns
 print(type(poseEstimation_ns))
 
 def shutdown_logic():
+
     print("Flask app is shutting down...")
 
 

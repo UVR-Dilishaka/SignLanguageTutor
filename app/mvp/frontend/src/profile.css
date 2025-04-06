@@ -1,131 +1,175 @@
 
-
-/* Header */
-.profile-header, .play-header {
-    width: 100%;
-    padding: 20px;
-    background-color: var(--header-title);
-    color: white;
-    text-align: center;
-    font-size: 36px;
-    font-weight: bold;
-    box-shadow: 0 6px 12px var(--shadow-color);
+:root {
+  --profile-bg-color: #F5E3EE;
+  
 }
 
+/* * {
+  border: 1px solid red !important;
+} */
+
+/* top div */
+/* header and profile-content is inside this div */
 .profile-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
+  background-color: var(--profile-bg-color);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   
-  .profile-content {
-    display: flex;
-    flex: 1;
-    gap: 20px;
-    padding: 20px;
-  }
-  
-  .profile-left {
-    flex: 1; /* Takes less space */
-    max-width: 200px; /* Limit width */
-  }
-  
-  .profile-right {
-    flex: 5; /* Takes more space */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .profile-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .menu-item {
-    text-decoration: none;
-    color: #333;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: var(--button-color);
-    transition: background 0.3s ease-in-out;
-  }
-  
-  .menu-item:hover {
-    background-color: var(--button-hover);
-  }
-  
-  .profile-switchcard {
-    width: 100%;
-    max-width: 800px;
-
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  }
+}
 
 
-  /* Profile Report Container */
+.profile-header,
+.play-header {
+  width: 100%;
+  padding: 20px;
+  background-color: #CD93D7;
+  color: white;
+  text-align: center;
+  font-size: 36px;
+  font-weight: bold;
+}
+
+
+.profile-content {
+  display: flex;
+  flex: 1;
+  padding: 20px;
+  gap: 20px;
+}
+
+
+
+.profile-left {
+  background-color: white;
+  flex: 1;
+  border-radius: 20px;
+  padding: 20px;
+  
+}
+
+.profile-right {
+  background-color: white;
+  border-radius: 20px;
+  flex: 5;
+  display: flex;
+  flex-direction: column; /* stack children vertically */
+  /* padding: 20px; */
+}
+.profile-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.menu-item {
+  text-decoration: none;
+  color: #333;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #AA93D7;
+  transition: background 0.3s ease-in-out;
+}
+
+.menu-item:hover {
+  background-color: var(--button-hover);
+}
+
+.student-dropdown{
+  padding-top: 20px;
+  
+}
+
+.profile-switchcard,
 .profile-report {
-    display: flex;
-    flex-direction: column;
-    border-radius: 10px;
-    width: 100%;
-    max-width: 800px;
-    /* box-shadow: 0 4px 10px var(--shadow-color); */
+  width: 100%;
+
+  flex: 1; /* allow it to grow */
+  display: flex;
+  flex-direction: column;
+
+  background: white;
+  border-radius: 20px;
+  /* padding: 20px; */
+
 }
 
-/* User Details */
 .userdetails {
-    
-    padding: 15px;
-    border-radius: 8px;
-    /* box-shadow: 0 2px 6px var(--shadow-color); */
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 10px;
 }
 
-/* Language Switching Buttons */
 .switch-buttons {
-    display: flex;
-    justify-content: center;
-
+  display: flex;
+  justify-content: center;
+  padding: 20px;
 }
 
+.view-report-button,
 .switch-buttons button {
-    padding: 10px 15px;
-    font-size: 16px;
-    font-weight: bold;
-    background-color: var(--button-color);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease;
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #AA93D7;
+  color: var(--text-color);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-.switch-buttons button.active {
-    background-color: var(--button-hover);
+.view-report-button{
+  margin-top: 10px;
 }
 
+
+.switch-buttons button.active,
 .switch-buttons button:hover {
-    background-color: var(--button-hover);
+  background-color: var(--button-hover);
 }
 
-/* Graph Section */
 .Grapgh-section {
-    overflow-x: auto; /* Enables horizontal scrolling */
-    max-width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-   
-    box-shadow: 0 2px 6px var(--shadow-color);
+  overflow-x: auto;
+  max-width: 100%;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px var(--shadow-color);
 }
 
 .masterry-graph {
-    min-width: 600px; /* Ensures content inside is scrollable if needed */
-    height: 300px;
+  min-width: 600px;
+  height: 300px;
 }
 
-  
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
 
-  
+.graph-card {
+  background-color: white;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  height: 350px;
+}
+
+
+.student-dropdown {
+  margin-top: 20px;
+  width: 100%;
+  padding: 8px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.student-dropdown:focus {
+  border-color: #AA93D7;
+  outline: none;
+}

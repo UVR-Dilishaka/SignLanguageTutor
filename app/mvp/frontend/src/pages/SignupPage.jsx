@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import FormInput from "../components/FormInput";
 import CheckboxInput from "../components/CheckboxInput";
-import { Link } from "react-router-dom";
+
 import "../App.css";
 import Header from "../components/Header";
+import { Link, useNavigate } from "react-router-dom";
 
 function Signuppage() {
+
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -70,7 +73,9 @@ function Signuppage() {
               password: "",
               confirmPassword: "",
               isTeacher: false,
+              
             });
+            navigate("/login");
           }
         } else
         {

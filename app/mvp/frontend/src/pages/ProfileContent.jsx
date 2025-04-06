@@ -63,8 +63,8 @@ const ProfileContent = () => {
   const filteredMasteryData = masteryData.filter(item => item.language === selectedLanguage);
 
   const practiceData = [
-    { date: "2025-03-18", signs_practiced: 5 },
-    { date: "2025-03-19", signs_practiced: 7 },
+    { date: "2025-03-18", signs_practiced: 2 },
+    { date: "2025-03-19", signs_practiced: 1 },
     { date: "2025-03-20", signs_practiced: 3 },
     { date: "2025-03-21", signs_practiced: 8 },
     { date: "2025-03-22", signs_practiced: 6 },
@@ -76,11 +76,7 @@ const ProfileContent = () => {
 
   return (
     <div className="profile-report">
-      <div className="userdetails">
-        <p><strong>Username:</strong> {userData.username}</p>
-        <p><strong>Email:</strong> {userData.email}</p>
-        <p><strong>Role:</strong> {userData.isteacher ? "Teacher" : "Student"}</p>
-      </div>
+
 
       <div className="switch-buttons">
         <button className={selectedLanguage === "Sinhala" ? "active" : ""} onClick={() => setSelectedLanguage("Sinhala")}>
@@ -91,33 +87,72 @@ const ProfileContent = () => {
         </button>
       </div>
 
-      <div className="Graph-section">
-        <div className="mastery-graph">
-          {filteredMasteryData.length > 0 ? (
+      <div className="graph-section">
+        <div className="grid-container">
+          {/* Mastery Graph 1 */}
+          <div className="graph-card">
+            <p>Mastery level for each sign</p>
+            {filteredMasteryData.length > 0 ? (
+              
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={filteredMasteryData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="mono_code_characters" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="current_mastery_level" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <p>No data available for {selectedLanguage} signs</p>
+            )}
+          </div>
+
+          {/* Practice Graph 1 */}
+          <div className="graph-card">
+          <p>Signs practiced each day</p>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={filteredMasteryData}>
+              <LineChart data={practiceData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="mono_code_characters" />
+                <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="current_mastery_level" fill="#8884d8" />
-              </BarChart>
+                <Line type="monotone" dataKey="signs_practiced" stroke="#82ca9d" />
+              </LineChart>
             </ResponsiveContainer>
-          ) : (
-            <p>No data available for {selectedLanguage} signs</p>
-          )}
-        </div>
+          </div>
 
-        <div className="practice-graph">
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={practiceData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="signs_practiced" stroke="#82ca9d" />
-            </LineChart>
-          </ResponsiveContainer>
+
+          {/* Mastery Graph 2 (duplicate for now) */}
+          <div className="graph-card">
+            {filteredMasteryData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={filteredMasteryData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="mono_code_characters" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="current_mastery_level" fill="#ff8c00" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <p>No data available for {selectedLanguage} signs</p>
+            )}
+          </div>
+
+
+          {/* Practice Graph 2 (duplicate for now) */}
+          <div className="graph-card">
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={practiceData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Line type="monotone" dataKey="signs_practiced" stroke="#ff69b4" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
     </div>

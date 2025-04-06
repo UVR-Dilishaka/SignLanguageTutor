@@ -95,17 +95,46 @@ const PlayPage = () => {
               setShowGoodJob(true);
               setWon(false);
               setCorrectSigns((prevSigns) => [...prevSigns, currentSign]);
+
+                // Make the request when won
+              const studentId = userData.u; 
+              const signId = currentSign.id; 
+              const correct = 1; 
+              fetch(`/updatestudentmastery/${studentId}/${signId}/${correct}`, {
+                method: 'POST',
+              })
+                .then(response => response.json())
+                .then(data => {
+                  console.log('Mastery updated:', data);
+                })
+                .catch((error) => {
+                  console.error('Error updating mastery:', error);
+                });
+
               
 
             }else{
               setShowTryAgain(true);
               setIncorrectSigns((prevSigns) => [...prevSigns, currentSign]);
+              // Make the request when won
+              const studentId = userData.username; 
+              const signId = currentSign.id; 
+              const correct = 0; 
+              fetch(`/updatestudentmastery/${studentId}/${signId}/${correct}`, {
+                method: 'POST',
+              })
+                .then(response => response.json())
+                .then(data => {
+                  console.log('Mastery updated:', data);
+                })
+                .catch((error) => {
+                  console.error('Error updating mastery:', error);
+                });
+
               
             }
 
-            // const currentSignIndex = signs.indexOf(currentSign);
-            // const nextSignIndex = (currentSignIndex + 1) % signs.length;
-            // setCurrentSign(signs[nextSignIndex]);
+
             setHintUsed(false);
             const currentSignIndex = signs.indexOf(currentSign);
             const nextSignIndex = (currentSignIndex + 1);
@@ -371,11 +400,11 @@ const PlayPage = () => {
 
               let signColor;
               if (isCorrect) {
-                signColor = "green"; // Green for correct
+                signColor = "#6cd98a"; // Green for correct
               } else if (isIncorrect) {
-                signColor = "red"; // Red for incorrect
+                signColor = "#FE6961"; // Red for incorrect
               } else {
-                signColor = sign === currentSign ? "darkblue" : "lightblue"; // Default color
+                signColor = sign === currentSign ? "#AA93D7" : "lightblue"; // Default color
               }
 
               return (

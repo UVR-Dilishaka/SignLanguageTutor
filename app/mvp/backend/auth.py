@@ -4,7 +4,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from model import User
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, jwt_required
 
-
 auth_ns = Namespace('auth', description='Authentication operations')
 
 signup_model = auth_ns.model(
@@ -46,6 +45,7 @@ class Signup(Resource):
             password=generate_password_hash(data.get('password')),
             isteacher= bool(data.get('isteacher'))
         )
+
 
         new_user.save()
         return 201

@@ -3,17 +3,18 @@ from flask_restx import Namespace, Resource
 from model import StudentSignMastery,PerformanceHistory,Sign
 import numpy as np
 import random
-import pickle
 
-from ext import db
+
+
+from ext import db,bktmodel
 
 adoptiveTutoring_ns = Namespace('tutorSystem', description='API endpoints for the adaptive tutoring system')
 
 
 
 
-def selectSigns(student_id, language):
-    # Join StudentSignMastery with Sign to filter by language
+def selectSigns(student_id, language, epsilon=0.1):
+    
     mastery_records = (
         db.session.query(StudentSignMastery)
         .join(Sign, StudentSignMastery.sign_id == Sign.id)
@@ -27,15 +28,21 @@ def selectSigns(student_id, language):
     sign_ids = [record.sign_id for record in mastery_records]
     mastery_levels = np.array([float(record.current_mastery_level) for record in mastery_records])
 
-    # epsilon = 0.1
-    # if random.random() < epsilon:
-    #     selected_signs = random.sample(sign_ids, min(4, len(sign_ids)))  # Avoid out-of-range errors
+    selected_signs = []
 
-    # else:
-    #     selected_indices = np.argsort(mastery_levels)[:4]
-    #     selected_signs = [sign_ids[i] for i in selected_indices]
+    for i in range(4):
+        
+        if random.random() < epsilon:
+           
+            selected_sign = random.choice(sign_ids)
+        else:
+            
+            lowest_mastery_index = np.argmin(mastery_levels)
+            selected_sign = sign_ids[lowest_mastery_index]
+            mastery_levels[lowest_mastery_index] = float('inf')  
 
-    selected_signs = random.sample(sign_ids, min(4, len(sign_ids)))
+        selected_signs.append(selected_sign)
+
     return selected_signs
 
 
@@ -52,23 +59,21 @@ class MultiarmedBandit(Resource):
             "language": language,
             "selected_signs": selected_signs
         }, 200
+    
 
 
 
 
-# with open('rouster_model.pkl', 'rb') as file:
-#     model = pickle.load(file)
-
-# @adoptiveTutoring_ns.route('/updatestudentmastery/<int:student_id>/<int:sign_id>/<int:correct>')
-# class UpdateMastery(Resource):
+@adoptiveTutoring_ns.route('/updatestudentmastery/<int:student_id>/<int:sign_id>/<int:correct>')
+class UpdateMastery(Resource):
 
 
-#     def post(self, student_id, sign_id, correct):
-#         new_state = model.update_state(sign_id, student_id, correct)
-#         new_estimated_mastery = model.get_mastery_prob(sign_id, student_id)
-#         performance_history = PerformanceHistory(student_id=student_id, sign_id=sign_id, mastery_level=new_estimated_mastery)
-#         performance_history.save()
-#         student_sign_mastery = StudentSignMastery.query.filter_by(student_id=student_id, sign_id=sign_id).first()
+    def post(self, student_id, sign_id, correct):
+        new_state = bktmodel.update_state(sign_id, student_id, correct)
+        new_estimated_mastery = bktmodel.get_mastery_prob(sign_id, student_id)
+        performance_history = PerformanceHistory(student_id=student_id, sign_id=sign_id, mastery_level=new_estimated_mastery)
+        performance_history.save()
+        student_sign_mastery = StudentSignMastery.query.filter_by(student_id=student_id, sign_id=sign_id).first()
 
 
 

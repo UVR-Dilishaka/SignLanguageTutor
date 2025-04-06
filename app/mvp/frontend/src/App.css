@@ -139,7 +139,7 @@ body {
 .footer {
   width: 100%;
   height: 50px; /* Adjust height as needed */
-  background-color: var(--header-title); /* Light pink background */
+  background-color: #CD93D7; /* Light pink background */
 /* Stick to the bottom */
   bottom: 0;
   left: 0;
