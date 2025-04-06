@@ -6,6 +6,11 @@ import numpy as np
 import pickle  # For loading the trained model
 from PIL import Image
 import os
+import time  # To avoid freezing issues
+
+import tensorflow as tf
+tf.compat.v1.reset_default_graph()
+
 
 # List of landmark names
 landmark_names = [
@@ -29,20 +34,16 @@ point_indices = [
     (0, 1, 2), (2, 3, 4), (2, 1, 5)
 ]
 
-# Load the trained model from a .pkl file
+# Load the trained model
 @st.cache_resource
 def load_model():
-    model_path = "./Model/SSL_NN.pkl"  # Model is in the same directory as the script
+    model_path = "./best_rf_model_with_12.pkl"  # Update this path as needed
     if not os.path.exists(model_path):
         st.error(f"Model file not found at {model_path}. Please ensure the file exists.")
         return None
-    try:
-        with open(model_path, "rb") as f:
-            model = pickle.load(f)
-        return model
-    except Exception as e:
-        st.error(f"Error loading model: {e}")
-        return None
+    with open(model_path, "rb") as f:
+        model = pickle.load(f)
+    return model
 
 model = load_model()
 
@@ -70,23 +71,17 @@ def calculate_angle_bulk(landmarks, point_indices):
     return angles_deg
 
 st.title("Sign Language Tutor")
-
 st.header("Webcam Live Feed")
+
 run = st.checkbox("Run Webcam")
+frame_window = st.image([])  # For live webcam
+prediction_placeholder = st.empty()  # To display prediction
 
-show_landmarks_legend = False
-
-# Add a placeholder to show the prediction result
-prediction_placeholder = st.empty()
-
+# Webcam processing loop
 if run:
     cap = cv2.VideoCapture(0)
-    frame_window = st.image([])
-    landmarks_table = st.empty()  # Placeholder for the table
-    angles_table = st.empty()  # Placeholder for the angles table
-
     with mp_hands.Hands(max_num_hands=2, min_detection_confidence=0.7, min_tracking_confidence=0.7) as hands:
-        while run:
+        while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
                 st.error("Failed to capture image")
@@ -120,64 +115,29 @@ if run:
                     # Prepare a list to store landmarks as an array
                     landmarks_array = np.zeros((21, 3))
 
-                    # Extract landmark coordinates and associate them with the corresponding name
                     for i, landmark in enumerate(hand_landmarks.landmark):
                         # Normalize the coordinates by subtracting the wrist position
                         norm_x = landmark.x - wrist_x
                         norm_y = landmark.y - wrist_y
                         norm_z = landmark.z - wrist_z
 
-                        # Append both normalized and original coordinates to the data
-                        landmarks_data.append({
-                            'Hand': hand_label,  # Left or Right hand
-                            'Landmark': landmark_names[i],
-                            'Normalized_X': norm_x,
-                            'Normalized_Y': norm_y,
-                            'Normalized_Z': norm_z
-                        })
-
-                        # Store landmark coordinates into the array for angle calculation
+                        # Append to landmarks array
                         landmarks_array[i] = [landmark.x, landmark.y, landmark.z]
 
                     # Calculate angles using the landmark array
                     angles = calculate_angle_bulk(landmarks_array, point_indices)
 
-                    # Prepare angle data for display, including point indices
-                    for idx, angle in enumerate(angles):
-                        point_indices_str = f"({point_indices[idx][0]}, {point_indices[idx][1]}, {point_indices[idx][2]})"
-                        angle_data.append({
-                            'Hand': hand_label,
-                            'Angle_Index': f"Angle_{idx + 1}",
-                            'Angle_Degrees': angle,
-                            'Point_Indices': point_indices_str
-                        })
-
                     # Perform prediction using the loaded model
-                    angle_payload = np.array(angles).reshape(1, -1)  # Reshape for model input
-
-                    # Get the prediction from the model
-                    if model is not None:
-                        try:
-                            predicted_sign = model.predict(angle_payload)[0]  # For class labels
-                            # If the model outputs probabilities, use np.argmax to get the class
-                            # predicted_sign = np.argmax(model.predict(angle_payload), axis=1)[0]
-                            prediction_placeholder.write(f"Predicted Sign: {predicted_sign}")
-                        except Exception as e:
-                            st.error(f"Error making prediction: {e}")
-                    else:
-                        st.error("Model not loaded. Please check the model file.")
+                    if model:
+                        angle_payload = np.array(angles[:16]).reshape(1, -1)  # Adjust number of angles if needed
+                        predicted_sign = model.predict(angle_payload)[0]
+                        prediction_placeholder.write(f"Predicted Sign: {predicted_sign}")
 
             # Update the frame in Streamlit
             frame_window.image(frame)
 
-            # If there are landmarks, display them in a table
-            if landmarks_data:
-                df_landmarks = pd.DataFrame(landmarks_data)
-                landmarks_table.table(df_landmarks)
-
-            # If there are angles, display them in a table
-            if angle_data:
-                df_angles = pd.DataFrame(angle_data)
-                angles_table.table(df_angles)
+            # Limit frame rate to prevent Streamlit crash
+            time.sleep(0.05)
 
     cap.release()
+    cv2.destroyAllWindows()
